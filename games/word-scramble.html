@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Word Scramble – Brain Spark</title>
+  <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .scramble-area { text-align: center; }
+    .hint-badge {
+      display: inline-block; background: #fff3cd; color: #7a5200;
+      border-radius: 50px; padding: 6px 16px; font-size: 0.85rem;
+      font-weight: 700; margin-bottom: 16px;
+    }
+    .scrambled-letters {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+      margin: 20px 0;
+    }
+    .letter-tile {
+      width: 52px; height: 60px;
+      background: linear-gradient(135deg, #6c63ff, #9b8fff);
+      color: white; border-radius: 12px;
+      font-size: 1.6rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+      box-shadow: 0 3px 10px rgba(108,99,255,0.3);
+      user-select: none;
+      position: relative;
+    }
+    .letter-tile:active { transform: scale(0.9); }
+    .letter-tile.used { opacity: 0.25; pointer-events: none; }
+
+    .answer-row {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+      min-height: 68px; margin-bottom: 16px;
+      border: 2px dashed #c8c2ff; border-radius: 16px; padding: 8px;
+      align-items: center;
+    }
+    .answer-tile {
+      width: 52px; height: 60px;
+      background: white; border: 2px solid #6c63ff;
+      color: #2d2b4e; border-radius: 12px;
+      font-size: 1.6rem; font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: transform 0.15s;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.12);
+      user-select: none;
+    }
+    .answer-tile:active { transform: scale(0.9); }
+    .answer-tile.correct-anim { background: #d4f7e9; border-color: #43c59e; }
+    .answer-tile.wrong-anim { background: #fde0e0; border-color: #ff6584; }
+
+    .word-actions { display: flex; gap: 10px; margin-top: 4px; }
+    .hint-btn {
+      flex: 0 0 auto;
+      padding: 14px 20px; border: 2px solid #e0dcff; border-radius: 14px;
+      background: white; font-family: 'Nunito',sans-serif; font-weight: 700;
+      font-size: 0.95rem; cursor: pointer; color: #7b78a8; transition: all 0.15s;
+    }
+    .hint-btn:active { background: #ede9ff; }
+
+    .category-tag {
+      display: inline-block; background: #ede9ff; color: #6c63ff;
+      border-radius: 50px; padding: 4px 14px; font-size: 0.8rem;
+      font-weight: 700; margin-bottom: 12px; text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .progress-dots {
+      display: flex; justify-content: center; gap: 8px; margin-bottom: 18px;
+    }
+    .dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #e0dcff; transition: background 0.3s;
+    }
+    .dot.done { background: #43c59e; }
+    .dot.current { background: #6c63ff; }
+  </style>
+</head>
+<body>
+  <div class="game-page">
+    <div class="game-header">
+      <a href="../index.html" class="back-btn">←</a>
+      <span class="game-title">📝 Word Scramble</span>
+      <span class="game-score-header" id="headerScore">0 pts</span>
+    </div>
+
+    <div class="game-body">
+      <div id="introScreen">
+        <div class="instruction-card">
+          <div style="font-size:3rem;margin-bottom:10px;">📝</div>
+          <strong>How to play:</strong><br><br>
+          Tap the letters in the correct order to unscramble the word.<br>
+          Tap an answer tile to put the letter back.<br>
+          Use the Hint button if you get stuck!<br><br>
+          <em style="font-size:0.85rem;color:#7b78a8;">Exercises verbal memory and language processing.</em>
+        </div>
+        <div class="score-bar">
+          <div class="score-item"><div class="score-num" id="bestScoreWS">0</div><div class="score-label">Best Score</div></div>
+          <div class="score-item"><div class="score-num" id="totalWS">0</div><div class="score-label">Sessions</div></div>
+        </div>
+        <button class="big-btn" onclick="startGame()">Start Scrambling 📝</button>
+      </div>
+
+      <div id="gameScreen" style="display:none;">
+        <div class="score-bar">
+          <div class="score-item"><div class="score-num" id="scoreWS">0</div><div class="score-label">Score</div></div>
+          <div class="score-item"><div class="score-num" id="wordNumWS">1/10</div><div class="score-label">Word</div></div>
+          <div class="score-item"><div class="score-num" id="hintsLeft">3</div><div class="score-label">Hints left</div></div>
+        </div>
+
+        <div class="progress-dots" id="progressDots"></div>
+
+        <div class="scramble-area">
+          <div class="category-tag" id="categoryTag">Animals</div>
+          <div class="hint-badge" id="hintBadge" style="display:none;">💡 Hint: <span id="hintText"></span></div>
+          <div class="answer-row" id="answerRow">
+            <span style="color:#c8c2ff;font-size:0.9rem;">Tap letters below →</span>
+          </div>
+          <div class="scrambled-letters" id="scrambledLetters"></div>
+          <div class="word-actions">
+            <button class="hint-btn" onclick="clearAnswer()">↩ Clear</button>
+            <button class="big-btn" style="flex:1;margin:0;" onclick="checkAnswer()">Check ✓</button>
+            <button class="hint-btn" onclick="useHint()">💡 Hint</button>
+          </div>
+          <button class="big-btn orange" style="margin-top:10px;" onclick="skipWord()">Skip →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-overlay" id="resultOverlay">
+      <div class="result-box">
+        <div class="result-emoji" id="resultEmoji">🎉</div>
+        <h2 id="resultTitle">Word Master!</h2>
+        <p id="resultMsg"></p>
+        <div class="result-actions">
+          <button class="big-btn" onclick="startGame()">Play Again</button>
+          <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WORDS = [
+      { word: 'BUTTERFLY', hint: 'A flying insect with colorful wings', category: 'Nature' },
+      { word: 'GARDEN', hint: 'A place where flowers and vegetables grow', category: 'Nature' },
+      { word: 'DOLPHIN', hint: 'A friendly sea mammal', category: 'Animals' },
+      { word: 'SUNRISE', hint: 'The start of a new day', category: 'Nature' },
+      { word: 'KITCHEN', hint: 'The room where you cook', category: 'Home' },
+      { word: 'MOUNTAIN', hint: 'Very tall land formation', category: 'Nature' },
+      { word: 'BLANKET', hint: 'Keeps you warm in bed', category: 'Home' },
+      { word: 'PINEAPPLE', hint: 'A tropical yellow fruit', category: 'Food' },
+      { word: 'UMBRELLA', hint: 'Keeps you dry in the rain', category: 'Objects' },
+      { word: 'ELEPHANT', hint: 'The largest land animal', category: 'Animals' },
+      { word: 'RAINBOW', hint: 'Colourful arc seen after rain', category: 'Nature' },
+      { word: 'LANTERN', hint: 'A light you can carry', category: 'Objects' },
+      { word: 'STRAWBERRY', hint: 'A small red summer fruit', category: 'Food' },
+      { word: 'BIRTHDAY', hint: 'Your special day each year', category: 'Life' },
+      { word: 'SPARROW', hint: 'A small brown bird', category: 'Animals' },
+      { word: 'LIBRARY', hint: 'A place full of books', category: 'Places' },
+      { word: 'CHOCOLATE', hint: 'A sweet brown treat', category: 'Food' },
+      { word: 'FIREPLACE', hint: 'Keeps a room warm in winter', category: 'Home' },
+    ];
+
+    const ROUND_SIZE = 10;
+    let gameWords = [], wordIdx = 0, score = 0, hintsUsed = 0;
+    let currentWord = '', scrambled = [], answerLetters = [], letterIndices = [];
+
+    function getStats() { return JSON.parse(localStorage.getItem('ws_stats') || '{"best":0,"sessions":0}'); }
+    function saveStats() {
+      const st = getStats();
+      if (score > st.best) st.best = score;
+      st.sessions = (st.sessions||0)+1;
+      localStorage.setItem('ws_stats', JSON.stringify(st));
+      const today = new Date().toDateString();
+      let g = JSON.parse(localStorage.getItem('brainSpark')||'{}');
+      if (g.lastDate===today){g.gamesPlayed=(g.gamesPlayed||0)+1;localStorage.setItem('brainSpark',JSON.stringify(g));}
+    }
+
+    function init() {
+      const st = getStats();
+      document.getElementById('bestScoreWS').textContent = st.best;
+      document.getElementById('totalWS').textContent = st.sessions;
+    }
+
+    function shuffle(arr) { return [...arr].sort(() => Math.random()-0.5); }
+
+    function startGame() {
+      score = 0; wordIdx = 0; hintsUsed = 0;
+      gameWords = shuffle(WORDS).slice(0, ROUND_SIZE);
+      document.getElementById('introScreen').style.display = 'none';
+      document.getElementById('resultOverlay').classList.remove('show');
+      document.getElementById('gameScreen').style.display = '';
+      buildDots();
+      loadWord();
+    }
+
+    function buildDots() {
+      const d = document.getElementById('progressDots');
+      d.innerHTML = '';
+      gameWords.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'dot' + (i === 0 ? ' current' : '');
+        dot.id = 'dot_' + i;
+        d.appendChild(dot);
+      });
+    }
+
+    function loadWord() {
+      if (wordIdx >= gameWords.length) { saveStats(); endGame(); return; }
+      const entry = gameWords[wordIdx];
+      currentWord = entry.word;
+      answerLetters = [];
+      letterIndices = [];
+      scrambled = shuffle(currentWord.split(''));
+      document.getElementById('categoryTag').textContent = entry.category;
+      document.getElementById('hintBadge').style.display = 'none';
+      document.getElementById('wordNumWS').textContent = (wordIdx+1) + '/' + gameWords.length;
+      document.getElementById('hintsLeft').textContent = Math.max(0, 3 - hintsUsed);
+      renderLetters();
+      renderAnswer();
+      updateDots();
+    }
+
+    function updateDots() {
+      for (let i = 0; i < gameWords.length; i++) {
+        const d = document.getElementById('dot_' + i);
+        if (!d) continue;
+        d.className = 'dot' + (i < wordIdx ? ' done' : i === wordIdx ? ' current' : '');
+      }
+    }
+
+    function renderLetters() {
+      const zone = document.getElementById('scrambledLetters');
+      zone.innerHTML = '';
+      scrambled.forEach((letter, i) => {
+        const tile = document.createElement('div');
+        tile.className = 'letter-tile' + (letterIndices.includes(i) ? ' used' : '');
+        tile.textContent = letter;
+        tile.dataset.idx = i;
+        tile.onclick = () => pickLetter(i, letter, tile);
+        zone.appendChild(tile);
+      });
+    }
+
+    function renderAnswer() {
+      const row = document.getElementById('answerRow');
+      row.innerHTML = '';
+      if (answerLetters.length === 0) {
+        row.innerHTML = '<span style="color:#c8c2ff;font-size:0.9rem;">Tap letters below →</span>';
+        return;
+      }
+      answerLetters.forEach((item, pos) => {
+        const tile = document.createElement('div');
+        tile.className = 'answer-tile';
+        tile.textContent = item.letter;
+        tile.onclick = () => returnLetter(pos);
+        row.appendChild(tile);
+      });
+    }
+
+    function pickLetter(idx, letter, tile) {
+      if (letterIndices.includes(idx)) return;
+      letterIndices.push(idx);
+      answerLetters.push({ letter, srcIdx: idx });
+      tile.classList.add('used');
+      renderAnswer();
+    }
+
+    function returnLetter(pos) {
+      const item = answerLetters[pos];
+      letterIndices = letterIndices.filter(i => i !== item.srcIdx);
+      answerLetters.splice(pos, 1);
+      renderLetters();
+      renderAnswer();
+    }
+
+    function clearAnswer() {
+      answerLetters = [];
+      letterIndices = [];
+      renderLetters();
+      renderAnswer();
+    }
+
+    function checkAnswer() {
+      const attempt = answerLetters.map(a => a.letter).join('');
+      const row = document.getElementById('answerRow');
+      if (attempt === currentWord) {
+        const pts = Math.max(10, 30 - hintsUsed * 5);
+        score += pts;
+        document.getElementById('scoreWS').textContent = score;
+        document.getElementById('headerScore').textContent = score + ' pts';
+        row.querySelectorAll('.answer-tile').forEach(t => t.classList.add('correct-anim'));
+        setTimeout(() => { wordIdx++; loadWord(); }, 700);
+      } else {
+        row.querySelectorAll('.answer-tile').forEach(t => t.classList.add('wrong-anim'));
+        setTimeout(() => row.querySelectorAll('.answer-tile').forEach(t => t.classList.remove('wrong-anim')), 500);
+      }
+    }
+
+    function useHint() {
+      if (hintsUsed >= 3) return;
+      hintsUsed++;
+      document.getElementById('hintsLeft').textContent = Math.max(0, 3 - hintsUsed);
+      document.getElementById('hintText').textContent = gameWords[wordIdx].hint;
+      document.getElementById('hintBadge').style.display = 'inline-block';
+    }
+
+    function skipWord() {
+      wordIdx++;
+      clearAnswer();
+      loadWord();
+    }
+
+    function endGame() {
+      const st = getStats();
+      document.getElementById('resultEmoji').textContent = score >= 200 ? '🏆' : score >= 100 ? '🌟' : '💪';
+      document.getElementById('resultTitle').textContent = score >= 200 ? 'Word Master!' : 'Well done!';
+      document.getElementById('resultMsg').textContent = `You scored ${score} points!\nBest ever: ${st.best} points.`;
+      document.getElementById('resultOverlay').classList.add('show');
+    }
+
+    init();
+  </script>
+</body>
+</html>

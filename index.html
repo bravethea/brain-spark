@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Brain Spark – Keep Your Mind Sharp</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo">🧠 Brain Spark</div>
+        <div class="streak-badge" id="streakBadge">🔥 <span id="streakCount">0</span> day streak</div>
+      </div>
+    </header>
+
+    <!-- Welcome Banner -->
+    <section class="welcome-banner">
+      <div class="welcome-text">
+        <h1>Good <span id="timeGreeting">day</span>! 👋</h1>
+        <p>5 minutes a day keeps your mind sharp. Ready to train?</p>
+      </div>
+      <div class="daily-progress">
+        <div class="progress-ring-wrap">
+          <svg class="progress-ring" viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="32"/>
+            <circle class="ring-fill" id="progressRing" cx="40" cy="40" r="32"
+              stroke-dasharray="201" stroke-dashoffset="201"/>
+          </svg>
+          <div class="ring-label"><span id="gamesPlayed">0</span>/3</div>
+        </div>
+        <p class="progress-caption">daily goal</p>
+      </div>
+    </section>
+
+    <!-- Research callout -->
+    <div class="research-banner">
+      <span class="research-icon">📖</span>
+      <span><strong>Science-backed:</strong> A 2026 study found speed training cuts dementia risk by 25% over 20 years. These games are designed around that research.</span>
+    </div>
+
+    <!-- Game Grid -->
+    <section class="games-section">
+      <h2 class="section-title">Choose a Game</h2>
+      <div class="game-grid">
+
+        <a href="games/quick-flash.html" class="game-card featured">
+          <div class="game-icon">⚡</div>
+          <div class="card-badge">Most Effective</div>
+          <h3>Quick Flash</h3>
+          <p>Spot the image before it disappears. Speed training backed by clinical research.</p>
+          <div class="game-meta">
+            <span class="difficulty easy">Easy–Hard</span>
+            <span class="duration">~3 min</span>
+          </div>
+        </a>
+
+        <a href="games/memory-match.html" class="game-card">
+          <div class="game-icon">🃏</div>
+          <h3>Memory Match</h3>
+          <p>Flip cards and find the matching pairs. Trains working memory.</p>
+          <div class="game-meta">
+            <span class="difficulty medium">Medium</span>
+            <span class="duration">~4 min</span>
+          </div>
+        </a>
+
+        <a href="games/word-scramble.html" class="game-card">
+          <div class="game-icon">📝</div>
+          <h3>Word Scramble</h3>
+          <p>Unscramble the letters to reveal the hidden word. Exercises language skills.</p>
+          <div class="game-meta">
+            <span class="difficulty easy">Easy</span>
+            <span class="duration">~3 min</span>
+          </div>
+        </a>
+
+        <a href="games/number-sequence.html" class="game-card">
+          <div class="game-icon">🔢</div>
+          <h3>Number Sequence</h3>
+          <p>Remember and repeat growing number sequences. Builds short-term memory.</p>
+          <div class="game-meta">
+            <span class="difficulty medium">Medium</span>
+            <span class="duration">~3 min</span>
+          </div>
+        </a>
+
+        <a href="games/pattern-lights.html" class="game-card">
+          <div class="game-icon">🌈</div>
+          <h3>Pattern Lights</h3>
+          <p>Watch the light sequence and repeat it. Gets longer every round!</p>
+          <div class="game-meta">
+            <span class="difficulty medium">Medium</span>
+            <span class="duration">~4 min</span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Tips section -->
+    <section class="tips-section">
+      <h2 class="section-title">💡 Brain Health Tips</h2>
+      <div class="tips-grid">
+        <div class="tip-card">
+          <div class="tip-icon">🎯</div>
+          <p>Play <strong>Quick Flash</strong> daily — it's the game most directly linked to dementia prevention in research.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🔁</div>
+          <p>Return for <strong>booster sessions</strong> — the study found people who kept coming back had the most protection.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">🚶</div>
+          <p>Combine with a <strong>short daily walk</strong> — physical and mental exercise together work better than either alone.</p>
+        </div>
+        <div class="tip-card">
+          <div class="tip-icon">😴</div>
+          <p>Good <strong>sleep</strong> helps your brain consolidate what you've practiced. Aim for 7–8 hours.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>Made with ❤️ for keeping minds sharp · Based on the ACTIVE Trial research published in <em>Alzheimer's & Dementia</em>, 2026</p>
+    </footer>
+  </div>
+
+  <script>
+    // Greeting
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
+    document.getElementById('timeGreeting').textContent = greet;
+
+    // Streak & progress from localStorage
+    const today = new Date().toDateString();
+    let stats = JSON.parse(localStorage.getItem('brainSpark') || '{}');
+    if (!stats.lastDate) stats = { streak: 0, lastDate: '', gamesPlayed: 0, totalSessions: 0 };
+
+    if (stats.lastDate !== today) {
+      const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+      if (stats.lastDate === yesterday.toDateString()) {
+        stats.streak = (stats.streak || 0) + 1;
+      } else if (stats.lastDate !== today) {
+        stats.streak = 1;
+      }
+      stats.gamesPlayed = 0;
+      stats.lastDate = today;
+      localStorage.setItem('brainSpark', JSON.stringify(stats));
+    }
+
+    document.getElementById('streakCount').textContent = stats.streak || 0;
+    const gp = Math.min(stats.gamesPlayed || 0, 3);
+    document.getElementById('gamesPlayed').textContent = gp;
+    const offset = 201 - (201 * gp / 3);
+    document.getElementById('progressRing').style.strokeDashoffset = offset;
+  </script>
+</body>
+</html>

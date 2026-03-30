@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Pattern Lights – Brain Spark</title>
+  <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .lights-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      max-width: 320px;
+      margin: 0 auto 28px;
+    }
+    .light-btn {
+      aspect-ratio: 1;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.12s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    .light-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.5);
+      opacity: 0;
+      border-radius: inherit;
+      transition: opacity 0.15s;
+    }
+    .light-btn:active { transform: scale(0.93); }
+    .light-btn.lit::after { opacity: 1; }
+    .light-btn.pulse {
+      animation: lightPulse 0.45s ease;
+    }
+    @keyframes lightPulse {
+      0% { transform: scale(1); filter: brightness(1); }
+      40% { transform: scale(1.07); filter: brightness(1.8); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+    .light-btn.correct-flash { animation: correctFlash 0.5s; }
+    @keyframes correctFlash { 0%,100%{filter:brightness(1)} 50%{filter:brightness(2.2) saturate(1.5)} }
+    .light-btn.wrong-flash { animation: wrongFlash 0.5s; }
+    @keyframes wrongFlash { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)} 60%{transform:translateX(10px)} }
+
+    /* 9 distinct colour pairs (dim/lit) */
+    .l0 { background: #e74c3c; } /* red */
+    .l1 { background: #3498db; } /* blue */
+    .l2 { background: #2ecc71; } /* green */
+    .l3 { background: #f1c40f; } /* yellow */
+    .l4 { background: #9b59b6; } /* purple */
+    .l5 { background: #e67e22; } /* orange */
+    .l6 { background: #1abc9c; } /* teal */
+    .l7 { background: #e91e8c; } /* pink */
+    .l8 { background: #34495e; } /* dark */
+
+    .status-msg {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #2d2b4e;
+      margin-bottom: 16px;
+      min-height: 1.5em;
+    }
+    .round-indicator {
+      display: flex; justify-content: center; gap: 6px; margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .ri-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #e0dcff; transition: background 0.3s;
+    }
+    .ri-dot.active { background: #6c63ff; transform: scale(1.2); }
+    .ri-dot.done { background: #43c59e; }
+
+    .step-progress {
+      text-align: center; font-size: 0.85rem; color: #7b78a8;
+      font-weight: 600; margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-page">
+    <div class="game-header">
+      <a href="../index.html" class="back-btn">←</a>
+      <span class="game-title">🌈 Pattern Lights</span>
+      <span class="game-score-header" id="headerScore">Round 1</span>
+    </div>
+
+    <div class="game-body">
+      <div id="introScreen">
+        <div class="instruction-card">
+          <div style="font-size:3rem;margin-bottom:10px;">🌈</div>
+          <strong>How to play:</strong><br><br>
+          Watch the coloured lights flash in a sequence.<br>
+          Then tap them in the same order!<br>
+          Each round adds one more light to remember.<br><br>
+          <em style="font-size:0.85rem;color:#7b78a8;">Trains visual memory, attention, and pattern recognition.</em>
+        </div>
+        <div class="score-bar">
+          <div class="score-item"><div class="score-num" id="bestRound">1</div><div class="score-label">Best Round</div></div>
+          <div class="score-item"><div class="score-num" id="totalPL">0</div><div class="score-label">Sessions</div></div>
+        </div>
+        <button class="big-btn" onclick="startGame()">Start Playing 🌈</button>
+      </div>
+
+      <div id="gameScreen" style="display:none;">
+        <div class="score-bar">
+          <div class="score-item"><div class="score-num" id="roundDisplay">1</div><div class="score-label">Round</div></div>
+          <div class="score-item"><div class="score-num" id="stepsDisplay">1</div><div class="score-label">Sequence</div></div>
+          <div class="score-item"><div class="score-num" id="livesPL">❤️❤️❤️</div><div class="score-label">Lives</div></div>
+        </div>
+
+        <div class="status-msg" id="statusMsg">Watch the lights…</div>
+        <div class="step-progress" id="stepProgress"></div>
+        <div class="round-indicator" id="roundIndicator"></div>
+
+        <div class="lights-grid" id="lightsGrid"></div>
+      </div>
+    </div>
+
+    <div class="result-overlay" id="resultOverlay">
+      <div class="result-box">
+        <div class="result-emoji" id="resultEmoji">🎉</div>
+        <h2 id="resultTitle">Pattern Master!</h2>
+        <p id="resultMsg"></p>
+        <div class="result-actions">
+          <button class="big-btn" onclick="startGame()">Play Again</button>
+          <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let pattern = [], userStep = 0, round = 0, lives = 3, canInput = false;
+    const MAX_ROUNDS = 20;
+
+    function getStats() { return JSON.parse(localStorage.getItem('pl_stats') || '{"best":1,"sessions":0}'); }
+    function saveStats() {
+      const st = getStats();
+      if (round > st.best) st.best = round;
+      st.sessions = (st.sessions||0)+1;
+      localStorage.setItem('pl_stats', JSON.stringify(st));
+      const today = new Date().toDateString();
+      let g = JSON.parse(localStorage.getItem('brainSpark')||'{}');
+      if (g.lastDate===today){g.gamesPlayed=(g.gamesPlayed||0)+1;localStorage.setItem('brainSpark',JSON.stringify(g));}
+    }
+
+    function init() {
+      const st = getStats();
+      document.getElementById('bestRound').textContent = st.best;
+      document.getElementById('totalPL').textContent = st.sessions;
+    }
+
+    function buildGrid() {
+      const grid = document.getElementById('lightsGrid');
+      grid.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const btn = document.createElement('button');
+        btn.className = `light-btn l${i}`;
+        btn.id = 'light_' + i;
+        btn.addEventListener('click', () => userTap(i));
+        grid.appendChild(btn);
+      }
+    }
+
+    function startGame() {
+      pattern = []; round = 0; lives = 3; canInput = false;
+      document.getElementById('introScreen').style.display = 'none';
+      document.getElementById('resultOverlay').classList.remove('show');
+      document.getElementById('gameScreen').style.display = '';
+      buildGrid();
+      nextRound();
+    }
+
+    function nextRound() {
+      if (round >= MAX_ROUNDS) { saveStats(); endGame(); return; }
+      round++;
+      userStep = 0;
+      canInput = false;
+      pattern.push(Math.floor(Math.random() * 9));
+      updateUI();
+      buildRoundIndicator();
+      setStatus('👁️ Watch carefully…');
+      document.getElementById('stepProgress').textContent = '';
+      setTimeout(playSequence, 700);
+    }
+
+    function buildRoundIndicator() {
+      const ri = document.getElementById('roundIndicator');
+      ri.innerHTML = '';
+      const show = Math.min(round, 12);
+      for (let i = 0; i < show; i++) {
+        const d = document.createElement('div');
+        d.className = 'ri-dot' + (i < round - 1 ? ' done' : ' active');
+        ri.appendChild(d);
+      }
+    }
+
+    function flashLight(idx, duration, cb) {
+      const btn = document.getElementById('light_' + idx);
+      btn.classList.add('pulse');
+      setTimeout(() => { btn.classList.remove('pulse'); if (cb) setTimeout(cb, 100); }, duration);
+    }
+
+    function playSequence() {
+      canInput = false;
+      let i = 0;
+      const speed = Math.max(300, 700 - round * 20);
+
+      function next() {
+        if (i < pattern.length) {
+          flashLight(pattern[i], speed, () => { i++; setTimeout(next, 150); });
+        } else {
+          canInput = true;
+          setStatus('🎯 Your turn!');
+          updateStepProgress();
+        }
+      }
+      next();
+    }
+
+    function userTap(idx) {
+      if (!canInput) return;
+      flashLight(idx, 300, null);
+      if (idx === pattern[userStep]) {
+        userStep++;
+        updateStepProgress();
+        if (userStep === pattern.length) {
+          canInput = false;
+          setStatus('✅ Correct! Well done!');
+          setTimeout(nextRound, 800);
+        }
+      } else {
+        canInput = false;
+        document.getElementById('light_' + idx).classList.add('wrong-flash');
+        lives--;
+        updateUI();
+        setStatus('❌ Oops! Try again…');
+        setTimeout(() => {
+          if (lives <= 0) { saveStats(); endGame(); }
+          else { userStep = 0; setTimeout(playSequence, 800); }
+        }, 900);
+      }
+    }
+
+    function updateStepProgress() {
+      if (canInput) {
+        document.getElementById('stepProgress').textContent = `${userStep} / ${pattern.length} tapped`;
+      }
+    }
+
+    function updateUI() {
+      document.getElementById('roundDisplay').textContent = round;
+      document.getElementById('stepsDisplay').textContent = pattern.length;
+      document.getElementById('livesPL').textContent = '❤️'.repeat(Math.max(0, lives));
+      document.getElementById('headerScore').textContent = 'Round ' + round;
+    }
+
+    function setStatus(msg) {
+      document.getElementById('statusMsg').textContent = msg;
+    }
+
+    function endGame() {
+      const st = getStats();
+      document.getElementById('resultEmoji').textContent = round >= 12 ? '🧠' : round >= 7 ? '🌟' : '💪';
+      document.getElementById('resultTitle').textContent = round >= 12 ? 'Pattern Master!' : round >= 7 ? 'Excellent!' : 'Good effort!';
+      document.getElementById('resultMsg').textContent = `You completed ${round - 1} rounds, memorising sequences of up to ${pattern.length} lights!\nBest ever: Round ${st.best}.`;
+      document.getElementById('resultOverlay').classList.add('show');
+    }
+
+    init();
+  </script>
+</body>
+</html>

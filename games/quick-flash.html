@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Quick Flash – Brain Spark</title>
+  <link rel="stylesheet" href="../style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .flash-arena {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 24px rgba(108,99,255,0.10);
+      text-align: center;
+    }
+    .flash-scene {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(160deg, #87ceeb 0%, #98d8c8 60%, #8fbc8f 100%);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .flash-object {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5rem;
+      transition: opacity 0.1s;
+      user-select: none;
+    }
+    .flash-object.hidden { opacity: 0; }
+
+    .distractor-zone {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .choice-btn {
+      font-size: 2.5rem;
+      width: 76px; height: 76px;
+      border: 3px solid #e0dcff;
+      border-radius: 16px;
+      background: white;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .choice-btn:active { transform: scale(0.92); }
+    .choice-btn.correct { border-color: #43c59e; background: #d4f7e9; animation: flash-correct 0.4s; }
+    .choice-btn.wrong { border-color: #ff6584; background: #fde0e0; animation: shake 0.4s; }
+    @keyframes flash-correct { 0%,100%{background:#d4f7e9} 50%{background:#a8f0d8} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+    .speed-bar-wrap { margin-bottom: 16px; }
+    .speed-bar-label { font-size: 0.85rem; color: #7b78a8; font-weight: 600; margin-bottom: 6px; }
+    .speed-bar {
+      height: 10px; border-radius: 10px;
+      background: #e0dcff;
+      overflow: hidden;
+    }
+    .speed-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6c63ff, #ff6584);
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+    .round-label { font-size: 0.9rem; color: #7b78a8; font-weight: 700; margin-bottom: 14px; }
+
+    .feedback-toast {
+      position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+      background: #2d2b4e; color: white;
+      padding: 10px 24px; border-radius: 50px;
+      font-weight: 700; font-size: 1rem;
+      opacity: 0; transition: opacity 0.25s;
+      pointer-events: none; z-index: 150;
+    }
+    .feedback-toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="game-page">
+    <div class="game-header">
+      <a href="../index.html" class="back-btn">←</a>
+      <span class="game-title">⚡ Quick Flash</span>
+      <span class="game-score-header" id="headerScore">Score: 0</span>
+    </div>
+
+    <div class="game-body">
+      <!-- Intro screen -->
+      <div id="introScreen">
+        <div class="instruction-card">
+          <div style="font-size:3rem;margin-bottom:10px;">⚡</div>
+          <strong>How to play:</strong><br><br>
+          An image will flash briefly on screen.<br>
+          Then tap the matching image from the choices below!<br><br>
+          <em style="font-size:0.85rem;color:#7b78a8;">Based on the ACTIVE clinical trial — 25% reduced dementia risk after training regularly.</em>
+        </div>
+        <div class="score-bar">
+          <div class="score-item"><div class="score-num" id="bestScore">0</div><div class="score-label">Best Score</div></div>
+          <div class="score-item"><div class="score-num" id="totalPlayed">0</div><div class="score-label">Sessions</div></div>
+        </div>
+        <button class="big-btn" onclick="startGame()">Start Training ⚡</button>
+      </div>
+
+      <!-- Game screen -->
+      <div id="gameScreen" style="display:none;">
+        <div class="score-bar">
+          <div class="score-item"><div class="score-num" id="scoreDisplay">0</div><div class="score-label">Score</div></div>
+          <div class="score-item"><div class="score-num" id="roundDisplay">1</div><div class="score-label">Round</div></div>
+          <div class="score-item"><div class="score-num" id="livesDisplay">❤️❤️❤️</div><div class="score-label">Lives</div></div>
+        </div>
+        <div class="round-label" id="roundLabel">Get ready…</div>
+        <div class="speed-bar-wrap">
+          <div class="speed-bar-label">Speed Level: <span id="speedLabel">1</span></div>
+          <div class="speed-bar"><div class="speed-fill" id="speedFill" style="width:10%"></div></div>
+        </div>
+        <div class="flash-arena">
+          <div class="flash-scene">
+            <div class="flash-object" id="flashObject">🚗</div>
+          </div>
+          <div class="distractor-zone" id="choiceZone"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feedback-toast" id="feedbackToast"></div>
+
+    <!-- Result overlay -->
+    <div class="result-overlay" id="resultOverlay">
+      <div class="result-box">
+        <div class="result-emoji" id="resultEmoji">🎉</div>
+        <h2 id="resultTitle">Well done!</h2>
+        <p id="resultMsg"></p>
+        <div class="result-actions">
+          <button class="big-btn" onclick="startGame()">Play Again</button>
+          <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const OBJECTS = ['🚗','🚕','🚙','🚌','🚎','🚐','🚑','🚒','🏎️','🚓',
+      '🍎','🍊','🍋','🍇','🍓','🍑','🥝','🍒','🥭','🍍',
+      '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯',
+      '⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🎯',
+      '🌸','🌺','🌻','🌹','🌷','🌼','💐','🌿','🍀','🎋'];
+
+    let score = 0, round = 0, lives = 3, level = 1, answering = false;
+    const TOTAL_ROUNDS = 15;
+
+    function getStats() {
+      return JSON.parse(localStorage.getItem('qf_stats') || '{"best":0,"sessions":0}');
+    }
+    function saveStats(s, r) {
+      const st = getStats();
+      if (s > st.best) st.best = s;
+      st.sessions = (st.sessions || 0) + 1;
+      localStorage.setItem('qf_stats', JSON.stringify(st));
+      // update global progress
+      const today = new Date().toDateString();
+      let global = JSON.parse(localStorage.getItem('brainSpark') || '{}');
+      if (global.lastDate === today) {
+        global.gamesPlayed = (global.gamesPlayed || 0) + 1;
+        localStorage.setItem('brainSpark', JSON.stringify(global));
+      }
+    }
+
+    function init() {
+      const st = getStats();
+      document.getElementById('bestScore').textContent = st.best;
+      document.getElementById('totalPlayed').textContent = st.sessions;
+    }
+
+    function startGame() {
+      score = 0; round = 0; lives = 3; level = 1; answering = false;
+      document.getElementById('introScreen').style.display = 'none';
+      document.getElementById('resultOverlay').classList.remove('show');
+      document.getElementById('gameScreen').style.display = '';
+      nextRound();
+    }
+
+    function shuffle(arr) { return [...arr].sort(() => Math.random()-0.5); }
+    function pick(arr, n) { return shuffle(arr).slice(0, n); }
+
+    function getFlashDuration() {
+      // Level 1: 2000ms → Level 10: 400ms
+      return Math.max(400, 2000 - (level - 1) * 178);
+    }
+
+    function nextRound() {
+      if (round >= TOTAL_ROUNDS || lives <= 0) { endGame(); return; }
+      round++;
+      answering = false;
+      updateUI();
+
+      // Pick target and distractors
+      const target = OBJECTS[Math.floor(Math.random() * OBJECTS.length)];
+      const others = OBJECTS.filter(o => o !== target);
+      const distractors = pick(others, 3);
+      const choices = shuffle([target, ...distractors]);
+
+      document.getElementById('roundLabel').textContent = `Round ${round} of ${TOTAL_ROUNDS}`;
+
+      // Flash the target
+      const obj = document.getElementById('flashObject');
+      obj.textContent = target;
+      obj.classList.remove('hidden');
+
+      const flashDur = getFlashDuration();
+
+      setTimeout(() => {
+        obj.classList.add('hidden');
+        // Show choices
+        answering = true;
+        const zone = document.getElementById('choiceZone');
+        zone.innerHTML = '';
+        choices.forEach(c => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.textContent = c;
+          btn.onclick = () => handleChoice(btn, c, target);
+          zone.appendChild(btn);
+        });
+      }, flashDur);
+    }
+
+    function handleChoice(btn, chosen, target) {
+      if (!answering) return;
+      answering = false;
+      if (chosen === target) {
+        btn.classList.add('correct');
+        score += level * 10;
+        showToast('✓ Correct! +' + (level * 10));
+        if (round % 3 === 0 && level < 10) level++;
+      } else {
+        btn.classList.add('wrong');
+        lives--;
+        showToast('✗ That was ' + target);
+        // Reveal correct
+        const btns = document.querySelectorAll('.choice-btn');
+        btns.forEach(b => { if (b.textContent === target) b.classList.add('correct'); });
+      }
+      updateUI();
+      setTimeout(nextRound, 900);
+    }
+
+    function updateUI() {
+      document.getElementById('scoreDisplay').textContent = score;
+      document.getElementById('roundDisplay').textContent = round;
+      document.getElementById('livesDisplay').textContent = '❤️'.repeat(Math.max(0,lives));
+      document.getElementById('headerScore').textContent = 'Score: ' + score;
+      document.getElementById('speedLabel').textContent = level;
+      document.getElementById('speedFill').style.width = (level * 10) + '%';
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('feedbackToast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 800);
+    }
+
+    function endGame() {
+      saveStats(score, round);
+      const st = getStats();
+      const overlay = document.getElementById('resultOverlay');
+      document.getElementById('resultEmoji').textContent = score >= 100 ? '🏆' : score >= 50 ? '🌟' : '💪';
+      document.getElementById('resultTitle').textContent = score >= 100 ? 'Amazing!' : score >= 50 ? 'Great job!' : 'Keep going!';
+      document.getElementById('resultMsg').textContent =
+        `You scored ${score} points in ${round} rounds.\nSpeed level reached: ${level}.\nBest ever: ${st.best}`;
+      overlay.classList.add('show');
+    }
+
+    init();
+  </script>
+</body>
+</html>
