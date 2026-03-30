@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Cognitive Health Assessment – Brain Spark</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --primary:#6c63ff;--primary-light:#ede9ff;--accent:#ff6584;
+      --green:#43c59e;--yellow:#ffd166;--orange:#f4845f;
+      --bg:#f7f6ff;--card:#ffffff;--text:#2d2b4e;--muted:#7b78a8;
+      --radius:20px;--shadow:0 4px 24px rgba(108,99,255,0.10);
+    }
+    html{font-size:17px;}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    .app{max-width:680px;margin:0 auto;padding-bottom:60px;}
+
+    /* HEADER */
+    .header{background:var(--primary);padding:14px 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;}
+    .back-btn{color:white;text-decoration:none;font-size:1.5rem;line-height:1;}
+    .header-title{color:white;font-size:1.05rem;font-weight:800;flex:1;}
+    .section-badge{background:rgba(255,255,255,0.22);color:white;font-size:0.75rem;font-weight:800;padding:4px 12px;border-radius:50px;}
+
+    /* PROGRESS */
+    .progress-wrap{padding:0 20px;margin-top:14px;}
+    .progress-labels{display:flex;justify-content:space-between;font-size:0.75rem;font-weight:700;color:var(--muted);margin-bottom:6px;}
+    .progress-track{height:10px;background:#e0dcff;border-radius:10px;overflow:hidden;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:10px;transition:width 0.5s ease;}
+
+    /* SECTIONS */
+    .section{display:none;padding:20px;}
+    .section.active{display:block;animation:fadeIn 0.35s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* CARDS */
+    .card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .card-title{font-size:1rem;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+    .card-body{font-size:0.88rem;color:var(--muted);line-height:1.6;}
+    .science-ref{font-size:0.75rem;color:var(--primary);background:var(--primary-light);padding:4px 10px;border-radius:8px;display:inline-block;margin-top:8px;font-weight:600;}
+
+    /* SECTION INTRO */
+    .section-intro{background:linear-gradient(135deg,var(--primary),#9b8fff);color:white;border-radius:var(--radius);padding:24px;margin-bottom:18px;text-align:center;}
+    .section-intro .s-icon{font-size:2.8rem;margin-bottom:10px;}
+    .section-intro h2{font-size:1.3rem;font-weight:900;margin-bottom:6px;}
+    .section-intro p{font-size:0.88rem;opacity:0.9;line-height:1.5;}
+
+    /* DISCLAIMER */
+    .disclaimer{background:#fff8e1;border-left:4px solid var(--yellow);padding:16px;border-radius:12px;margin-bottom:18px;font-size:0.85rem;line-height:1.6;color:#5a4a00;}
+    .disclaimer strong{display:block;margin-bottom:4px;font-size:0.95rem;}
+
+    /* QUESTIONS */
+    .q-block{margin-bottom:20px;}
+    .q-text{font-size:0.95rem;font-weight:700;margin-bottom:12px;line-height:1.5;color:var(--text);}
+    .q-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--primary);color:white;border-radius:50%;font-size:0.75rem;font-weight:900;margin-right:8px;flex-shrink:0;}
+    .q-science{font-size:0.75rem;color:var(--muted);margin-bottom:10px;font-style:italic;}
+
+    /* RADIO OPTIONS */
+    .options{display:flex;flex-direction:column;gap:8px;}
+    .opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:2px solid #e0dcff;border-radius:14px;cursor:pointer;transition:all 0.15s;background:white;}
+    .opt:active{transform:scale(0.98);}
+    .opt.selected{border-color:var(--primary);background:var(--primary-light);}
+    .opt input[type=radio]{display:none;}
+    .opt-dot{width:20px;height:20px;border-radius:50%;border:2px solid #c8c2ff;flex-shrink:0;margin-top:1px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+    .opt.selected .opt-dot{background:var(--primary);border-color:var(--primary);}
+    .opt.selected .opt-dot::after{content:'';width:8px;height:8px;background:white;border-radius:50%;}
+    .opt-label{font-size:0.88rem;font-weight:600;line-height:1.4;}
+
+    /* TEXT INPUT */
+    .text-input{width:100%;padding:14px 16px;border:2px solid #e0dcff;border-radius:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:600;color:var(--text);background:white;outline:none;transition:border-color 0.2s;}
+    .text-input:focus{border-color:var(--primary);}
+    .input-hint{font-size:0.78rem;color:var(--muted);margin-top:6px;}
+
+    /* MEMORY DISPLAY */
+    .word-display{background:linear-gradient(135deg,#2d2b4e,#4a4580);border-radius:18px;padding:28px;text-align:center;margin-bottom:16px;}
+    .word-display .big-word{font-size:2.4rem;font-weight:900;color:white;letter-spacing:0.05em;}
+    .word-display .word-counter{font-size:0.85rem;color:rgba(255,255,255,0.7);margin-top:8px;font-weight:600;}
+    .word-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+    .word-slot{padding:14px;background:white;border:2px solid #e0dcff;border-radius:14px;text-align:center;font-size:1rem;font-weight:800;color:var(--text);}
+
+    /* DIGIT DISPLAY */
+    .digit-display{background:linear-gradient(135deg,#1a4731,#27ae60);border-radius:18px;padding:24px;text-align:center;margin-bottom:16px;}
+    .digit-display .digits{font-size:3rem;font-weight:900;color:white;letter-spacing:0.2em;}
+    .digit-display .d-label{font-size:0.85rem;color:rgba(255,255,255,0.75);margin-top:6px;font-weight:600;}
+
+    /* CLOCK SVG */
+    .clock-wrap{display:flex;justify-content:center;margin:16px 0;}
+    .clock-face{filter:drop-shadow(0 4px 12px rgba(108,99,255,0.2));}
+
+    /* TIMER */
+    .timer-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+    .timer-display{font-size:1.8rem;font-weight:900;color:var(--primary);min-width:48px;}
+    .timer-track{flex:1;height:10px;background:#e0dcff;border-radius:10px;overflow:hidden;}
+    .timer-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--primary));border-radius:10px;transition:width 1s linear;}
+    .timer-fill.urgent{background:linear-gradient(90deg,var(--accent),var(--orange));}
+    .timer-label{font-size:0.8rem;color:var(--muted);font-weight:700;}
+
+    /* FLUENCY AREA */
+    .fluency-box{background:white;border:2px solid #e0dcff;border-radius:16px;padding:16px;margin-bottom:12px;}
+    .fluency-tags{display:flex;flex-wrap:wrap;gap:7px;min-height:50px;align-content:flex-start;}
+    .f-tag{background:var(--primary-light);color:var(--primary);border-radius:50px;padding:5px 14px;font-size:0.85rem;font-weight:700;animation:tagPop 0.25s cubic-bezier(0.34,1.56,0.64,1);}
+    @keyframes tagPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    .fluency-input-row{display:flex;gap:8px;margin-top:10px;}
+    .f-submit{padding:12px 18px;background:var(--primary);color:white;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.95rem;cursor:pointer;}
+
+    /* BUTTONS */
+    .big-btn{display:block;width:100%;padding:17px;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:800;color:white;background:var(--primary);border:none;border-radius:16px;cursor:pointer;text-align:center;box-shadow:0 4px 16px rgba(108,99,255,0.30);transition:transform 0.15s;margin-top:16px;}
+    .big-btn:active{transform:scale(0.97);}
+    .big-btn.green{background:var(--green);box-shadow:0 4px 16px rgba(67,197,158,0.30);}
+    .big-btn.orange{background:var(--orange);box-shadow:0 4px 16px rgba(244,132,95,0.30);}
+
+    /* RESULTS */
+    .result-hero{background:linear-gradient(135deg,var(--primary),#9b8fff);color:white;border-radius:var(--radius);padding:30px 24px;text-align:center;margin-bottom:20px;}
+    .result-score-ring{position:relative;width:130px;height:130px;margin:0 auto 16px;}
+    .score-svg{width:130px;height:130px;}
+    .score-bg{fill:none;stroke:rgba(255,255,255,0.25);stroke-width:12;}
+    .score-arc{fill:none;stroke:var(--yellow);stroke-width:12;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1.5s ease;}
+    .score-num-big{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2rem;font-weight:900;color:white;}
+    .score-label-sm{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:0.72rem;color:rgba(255,255,255,0.8);white-space:nowrap;font-weight:700;}
+    .result-hero h2{font-size:1.5rem;font-weight:900;margin-bottom:6px;}
+    .result-hero p{opacity:0.9;font-size:0.9rem;line-height:1.5;}
+
+    .domain-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+    .domain-card{background:var(--card);border-radius:16px;padding:16px;box-shadow:var(--shadow);}
+    .domain-name{font-size:0.8rem;font-weight:700;color:var(--muted);margin-bottom:4px;}
+    .domain-score{font-size:1.4rem;font-weight:900;color:var(--primary);}
+    .domain-bar{height:6px;background:#e0dcff;border-radius:6px;margin-top:6px;overflow:hidden;}
+    .domain-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--primary),var(--accent));}
+    .domain-max{font-size:0.7rem;color:var(--muted);font-weight:600;}
+
+    .stage-card{border-radius:16px;padding:20px;margin-bottom:16px;}
+    .stage-normal{background:#d4f7e9;border-left:4px solid var(--green);}
+    .stage-mild{background:#fff3cd;border-left:4px solid var(--yellow);}
+    .stage-moderate{background:#ffe0cc;border-left:4px solid var(--orange);}
+    .stage-significant{background:#fde0e0;border-left:4px solid var(--accent);}
+    .stage-title{font-size:1rem;font-weight:800;margin-bottom:6px;}
+    .stage-body{font-size:0.85rem;line-height:1.6;color:#333;}
+
+    .refs-card{background:var(--primary-light);border-radius:16px;padding:18px;margin-bottom:16px;}
+    .refs-card h3{font-size:0.95rem;font-weight:800;margin-bottom:10px;color:var(--primary);}
+    .ref-item{font-size:0.78rem;color:var(--muted);margin-bottom:7px;line-height:1.5;padding-left:14px;position:relative;}
+    .ref-item::before{content:'•';position:absolute;left:0;color:var(--primary);}
+
+    .rec-list{list-style:none;padding:0;}
+    .rec-list li{padding:10px 0;border-bottom:1px solid #f0eeff;font-size:0.88rem;line-height:1.5;display:flex;gap:10px;}
+    .rec-list li:last-child{border-bottom:none;}
+    .rec-icon{font-size:1.2rem;flex-shrink:0;}
+
+    /* Overlap figures */
+    .overlap-img{display:flex;justify-content:center;margin:12px 0;}
+    .overlap-box{background:white;border:2px solid #e0dcff;border-radius:16px;padding:20px;position:relative;display:flex;align-items:center;justify-content:center;width:240px;height:160px;}
+
+    /* Highlight correct/wrong */
+    .opt.correct{border-color:var(--green);background:#d4f7e9;}
+    .opt.wrong{border-color:var(--accent);background:#fde0e0;}
+
+    @media(max-width:500px){
+      html{font-size:15px;}
+      .domain-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <a href="index.html" class="back-btn">←</a>
+    <span class="header-title">🧠 Cognitive Health Assessment</span>
+    <span class="section-badge" id="sectionBadge">Intro</span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-labels">
+      <span id="progressLabel">Getting started</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION 0: INTRO                                   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section active" id="sec0">
+    <div style="padding:20px 0 0;">
+      <div class="section-intro">
+        <div class="s-icon">🧠</div>
+        <h2>Cognitive Health Assessment</h2>
+        <p>A comprehensive, science-backed screening tool for memory, language, attention, and behaviour — covering early, mild, and moderate cognitive changes.</p>
+      </div>
+
+      <div class="disclaimer">
+        <strong>⚠️ Important Medical Disclaimer</strong>
+        This is a <em>screening tool only</em> — not a clinical diagnosis. Results cannot replace a consultation with a GP, neurologist, or memory specialist. If you have concerns, please speak to a doctor. This tool is based on validated research instruments including the MMSE, MoCA, ACE-III, AD8, and Neuropsychiatric Inventory.
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 What this test covers</div>
+        <div class="card-body">
+          <strong>8 domains · ~20 minutes</strong><br><br>
+          A — Behavioural &amp; Self-Report Assessment<br>
+          B — Orientation (time &amp; place)<br>
+          C — Memory: Immediate Recall<br>
+          D — Attention &amp; Working Memory<br>
+          E — Language &amp; Naming<br>
+          F — Abstract Reasoning<br>
+          G — Memory: Delayed Recall<br>
+          H — Visuospatial Perception
+        </div>
+        <span class="science-ref">Based on MMSE · MoCA · ACE-III · AD8 · NPI</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👤 About You</div>
+        <div class="q-block">
+          <div class="q-text">Age range:</div>
+          <div class="options" id="ageOpts">
+            <label class="opt"><input type="radio" name="age" value="1"><div class="opt-dot"></div><span class="opt-label">Under 50</span></label>
+            <label class="opt"><input type="radio" name="age" value="2"><div class="opt-dot"></div><span class="opt-label">50–64</span></label>
+            <label class="opt"><input type="radio" name="age" value="3"><div class="opt-dot"></div><span class="opt-label">65–74</span></label>
+            <label class="opt"><input type="radio" name="age" value="4"><div class="opt-dot"></div><span class="opt-label">75–84</span></label>
+            <label class="opt"><input type="radio" name="age" value="5"><div class="opt-dot"></div><span class="opt-label">85 or older</span></label>
+          </div>
+        </div>
+        <div class="q-block">
+          <div class="q-text">Highest level of education:</div>
+          <div class="options" id="eduOpts">
+            <label class="opt"><input type="radio" name="edu" value="1"><div class="opt-dot"></div><span class="opt-label">Primary school</span></label>
+            <label class="opt"><input type="radio" name="edu" value="2"><div class="opt-dot"></div><span class="opt-label">Secondary school</span></label>
+            <label class="opt"><input type="radio" name="edu" value="3"><div class="opt-dot"></div><span class="opt-label">College / vocational</span></label>
+            <label class="opt"><input type="radio" name="edu" value="4"><div class="opt-dot"></div><span class="opt-label">University degree or higher</span></label>
+          </div>
+        </div>
+        <div class="q-block">
+          <div class="q-text">Who is completing this assessment?</div>
+          <div class="options" id="forOpts">
+            <label class="opt"><input type="radio" name="for" value="self"><div class="opt-dot"></div><span class="opt-label">I am completing it for myself</span></label>
+            <label class="opt"><input type="radio" name="for" value="other"><div class="opt-dot"></div><span class="opt-label">I am completing it on behalf of someone else</span></label>
+          </div>
+        </div>
+      </div>
+
+      <button class="big-btn" onclick="goSection(1)">Begin Assessment →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION A: BEHAVIOURAL SELF-REPORT                 -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="sec1">
+    <div class="section-intro">
+      <div class="s-icon">📋</div>
+      <h2>Part A: Behavioural Assessment</h2>
+      <p>Think about how things are <strong>compared to 2–3 years ago</strong>. Answer as honestly as possible — there are no right or wrong answers.</p>
+    </div>
+    <div class="card">
+      <span class="science-ref">Adapted from AD8 (Galvin et al., 2005, Neurology) · NPI (Cummings et al., 1994, Neurology) · Lawton IADL Scale (1969)</span>
+    </div>
+
+    <div class="card" id="behavCard"></div>
+    <button class="big-btn" onclick="scoreBehav();goSection(2)">Next: Orientation →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION B: ORIENTATION                             -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="sec2">
+    <div class="section-intro">
+      <div class="s-icon">🗓️</div>
+      <h2>Part B: Orientation</h2>
+      <p>Answer each question from memory — do not check your phone or calendar.</p>
+    </div>
+    <div class="card">
+      <span class="science-ref">From MMSE (Folstein et al., 1975, J Psychiatric Research) · Max score: 10 points</span>
+    </div>
+
+    <div id="orientCard"></div>
+    <button class="big-btn" onclick="scoreOrient();goSection(3)">Next: Memory →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION C: MEMORY – IMMEDIATE RECALL               -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="sec3">
+    <div class="section-intro">
+      <div class="s-icon">💭</div>
+      <h2>Part C: Memory — Learning</h2>
+      <p>Study the words carefully. You will be asked to recall them later.</p>
+    </div>
+    <div class="card">
+      <span class="science-ref">Word list learning adapted from ADAS-Cog (Rosen et al., 1984, Am J Psychiatry) · ACE-III (Hsieh et al., 2013, JNNP)</span>
+    </div>
+
+    <div id="memLearnSection"></div>
+    <div id="memRecallSection" style="display:none;"></div>
+    <button class="big-btn" id="memBtn" onclick="memNext()">Start →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION D: ATTENTION & WORKING MEMORY              -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="sec4">
+    <div class="section-intro">
+      <div class="s-icon">🎯</div>
+      <h2>Part D: Attention &amp; Working Memory</h2>
+      <p>Two short tasks testing concentration and the ability to hold information in mind.</p>
+    </div>
+    <div class="card">
+      <span class="science-ref">Serial subtraction from MMSE (Folstein, 1975) · Digit span from Wechsler Memory Scale (Wechsler, 1945)</span>
+    </div>
+
+    <div id="attnSection"></div>
+    <button class="big-btn" id="attnBtn" onclick="attnNext()">Start Task →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION E: LANGUAGE & NAMING                       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="sec5">
+    <div class="section-intro">
+      <div class="s-icon">🗣️</div>
+      <h2>Part E: Language &amp; Naming</h2>
+      <p>Three language tasks: naming objects, word generation, and sentence repetition.</p>
+    </div>
+    <div class="card">
+      <span class="science-ref">Confrontation naming &amp; verbal fluency from ACE-III (Hsieh et al., 2013) · Boston Naming Test (Kaplan et al., 1983)</span>
+    </div>
+
+    <div id="langSection"></div>
+    <button class="big-btn" id="langBtn" onclick="langNext()">Start →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION F: ABSTRACT REASONING                      -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="sec6">
+    <div class="section-intro">
+      <div class="s-icon">🔍</div>
+      <h2>Part F: Abstract Reasoning</h2>
+      <p>Questions about similarities and meaning — testing higher cognitive function.</p>
+    </div>
+    <div class="card">
+      <span class="science-ref">Similarities task from MoCA (Nasreddine et al., 2005, JAGS) · Abstraction subscale of ACE-III</span>
+    </div>
+
+    <div id="abstractCard"></div>
+    <button class="big-btn" onclick="scoreAbstract();goSection(7)">Next: Delayed Recall →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION G: DELAYED RECALL                          -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="sec7">
+    <div class="section-intro">
+      <div class="s-icon">⏳</div>
+      <h2>Part G: Delayed Recall</h2>
+      <p>Can you remember the words from Part C? This tests long-term memory consolidation.</p>
+    </div>
+    <div class="card">
+      <span class="science-ref">Delayed free recall is the single strongest predictor of Alzheimer's disease (Sarazin et al., 2007, Archives of Neurology) · Scoring from ACE-III</span>
+    </div>
+
+    <div id="delayedCard"></div>
+    <button class="big-btn" onclick="scoreDelayed();goSection(8)">Next: Visuospatial →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION H: VISUOSPATIAL                            -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="sec8">
+    <div class="section-intro">
+      <div class="s-icon">👁️</div>
+      <h2>Part H: Visuospatial Perception</h2>
+      <p>Tests the brain's ability to interpret and process visual information.</p>
+    </div>
+    <div class="card">
+      <span class="science-ref">Clock interpretation from CDT (Shulman, 2000, JAGS) · Visuospatial subscale from ACE-III · MoCA visuospatial tasks</span>
+    </div>
+
+    <div id="visuCard"></div>
+    <button class="big-btn" onclick="scoreVisu();showResults()">See My Results →</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- SECTION: RESULTS                                   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="section" id="secResults">
+    <div id="resultsContent"></div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const scores = { behav:0, orient:0, memImm:0, attn:0, lang:0, abstract:0, delayed:0, visuosp:0 };
+const maxes  = { behav:24,orient:10, memImm:10, attn:10, lang:18, abstract:8,  delayed:14,  visuosp:6 };
+// We'll normalise all to 100 at the end
+let memWords=[], memRecallAnswers=[], memPhase=0;
+let attnPhase=0, attnDigitAnswers=[], attnSubAnswers=[];
+let langPhase=0, fluencyWords=[], fluencyTimer=null, fluencySecondsLeft=60;
+let currentSection=0;
+
+const TOTAL_SECTIONS = 9; // 0-8
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function goSection(n){
+  document.getElementById('sec'+(n-1))||null;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(n<9?'sec'+n:'secResults');
+  if(el){el.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  currentSection=n;
+  updateProgress(n);
+  // Init sections on first visit
+  if(n===1) buildBehav();
+  if(n===2) buildOrient();
+  if(n===3) initMemory();
+  if(n===4) initAttn();
+  if(n===5) initLang();
+  if(n===6) buildAbstract();
+  if(n===7) buildDelayed();
+  if(n===8) buildVisu();
+}
+
+function updateProgress(n){
+  const labels=['Intro','Behavioural','Orientation','Memory Learning','Attention','Language','Reasoning','Delayed Recall','Visuospatial','Results'];
+  const pct=Math.round((n/9)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('progressLabel').textContent=labels[n]||'';
+  document.getElementById('sectionBadge').textContent=(n>0&&n<9)?'Part '+['A','B','C','D','E','F','G','H'][n-1]:n===9?'Results':'Intro';
+}
+
+// ─── OPTION HELPERS ──────────────────────────────────────────────────────────
+function buildOptions(container, name, opts){
+  container.innerHTML='';
+  const div=document.createElement('div');
+  div.className='options';
+  div.id='opts_'+name;
+  opts.forEach((o,i)=>{
+    const lbl=document.createElement('label');
+    lbl.className='opt';
+    lbl.innerHTML=`<input type="radio" name="${name}" value="${o.val}"><div class="opt-dot"></div><span class="opt-label">${o.text}</span>`;
+    lbl.onclick=()=>{
+      document.querySelectorAll(`[name="${name}"]`).forEach(r=>r.closest('.opt').classList.remove('selected'));
+      lbl.classList.add('selected');
+    };
+    div.appendChild(lbl);
+  });
+  container.appendChild(div);
+}
+
+function getSelected(name){
+  const el=document.querySelector(`[name="${name}"]:checked`);
+  return el?el.value:null;
+}
+
+// ─── PART A: BEHAVIOURAL ─────────────────────────────────────────────────────
+const BEHAV_QS = [
+  {id:'b1', text:'Memory problems — forgetting recent conversations, appointments, or where you put things', science:'Core item from AD8 (Galvin et al., 2005)'},
+  {id:'b2', text:'Difficulty recalling the correct word or name during conversation ("tip of the tongue")', science:'Anomia: early language marker, ACE-III Language subscale'},
+  {id:'b3', text:'Getting lost or confused in familiar places', science:'Topographical disorientation, Maguire et al., Nat Neurosci 2006'},
+  {id:'b4', text:'Difficulty managing finances, bills, or everyday paperwork', science:'IADL decline: Lawton & Brody, 1969; CDR Functional scale'},
+  {id:'b5', text:'Repeating the same questions, stories, or information within a short time', science:'Repetitive questioning: AD8 item, Galvin 2005'},
+  {id:'b6', text:'Difficulty learning to use a new device, appliance, or following new instructions', science:'Learning new information deficit: MoCA cognitive domain'},
+  {id:'b7', text:'Changes in personality, mood, or behaviour compared to your usual self', science:'NPI subscale: Cummings et al., 1994, Neurology'},
+  {id:'b8', text:'Loss of interest in hobbies, social activities, or things that used to matter', science:'Apathy subscale of NPI; strongest behavioural predictor of AD'},
+  {id:'b9', text:'Difficulty following a conversation or keeping track of a film or book', science:'Reduced working memory capacity: Baddeley et al., 2001'},
+  {id:'b10',text:'Sleep disturbances — sleeping much more or less, or confused at night', science:'Sleep disruption linked to amyloid clearance: Ju et al., 2014, JAMA Neurology'},
+  {id:'b11',text:'Losing track of the day, date, month, or year more than occasionally', science:'Temporal disorientation: MMSE orientation subscale'},
+  {id:'b12',text:'Difficulty making decisions or solving everyday problems', science:'Executive dysfunction: a key early marker (Royall et al., 2002, JAGS)'},
+];
+const BEHAV_OPTS = [
+  {val:'0',text:'No change — same as before'},
+  {val:'1',text:'Slight change — occasionally notice this'},
+  {val:'2',text:'Significant change — this happens regularly'},
+];
+
+function buildBehav(){
+  const card=document.getElementById('behavCard');
+  card.innerHTML='';
+  BEHAV_QS.forEach((q,i)=>{
+    const block=document.createElement('div');
+    block.className='q-block';
+    block.innerHTML=`<div class="q-text"><span class="q-num">${i+1}</span>${q.text}</div><div class="q-science">${q.science}</div>`;
+    const optsDiv=document.createElement('div');
+    buildOptions(optsDiv,q.id,BEHAV_OPTS);
+    block.appendChild(optsDiv);
+    card.appendChild(block);
+    if(i<BEHAV_QS.length-1){const hr=document.createElement('hr');hr.style.cssText='border:none;border-top:1px solid #f0eeff;margin:4px 0 16px';card.appendChild(hr);}
+  });
+}
+
+function scoreBehav(){
+  let total=0;
+  BEHAV_QS.forEach(q=>{
+    const v=getSelected(q.id);
+    total+=v?parseInt(v):0;
+  });
+  // Higher behavioural score = worse; convert so 0 problems = max score
+  scores.behav = Math.max(0, maxes.behav - total);
+}
+
+// ─── PART B: ORIENTATION ─────────────────────────────────────────────────────
+function buildOrient(){
+  const now=new Date();
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const seasons=['Spring','Summer','Autumn','Winter'];
+  const getSeason=m=>{if(m>=2&&m<=4)return'Spring';if(m>=5&&m<=7)return'Summer';if(m>=8&&m<=10)return'Autumn';return'Winter';}
+  const correctDay=days[now.getDay()];
+  const correctDate=now.getDate();
+  const correctMonth=months[now.getMonth()];
+  const correctYear=now.getFullYear();
+  const correctSeason=getSeason(now.getMonth());
+
+  function shuffleOpts(arr){return[...arr].sort(()=>Math.random()-0.5);}
+  function nearDates(d){const opts=new Set([d]);while(opts.size<4){opts.add(Math.max(1,Math.min(31,d+Math.floor(Math.random()*7)-3)));}return[...opts];}
+  function nearYears(y){const opts=new Set([y]);while(opts.size<4){opts.add(y+Math.floor(Math.random()*6)-3);}return[...opts];}
+
+  const OQS=[
+    {id:'o1',text:'What day of the week is it today?',opts:shuffleOpts(days).slice(0,4).map(d=>({val:d===correctDay?'1':'0',text:d})).concat([{val:'1',text:correctDay}]).filter((v,i,a)=>a.findIndex(x=>x.text===v.text)===i).sort(()=>Math.random()-0.5),correct:correctDay},
+    {id:'o2',text:'What is today\'s date (day of the month)?',opts:shuffleOpts(nearDates(correctDate)).slice(0,4).map(d=>({val:d===correctDate?'1':'0',text:String(d)})),correct:String(correctDate)},
+    {id:'o3',text:'What month is it?',opts:shuffleOpts(months).slice(0,3).concat([correctMonth]).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4).map(m=>({val:m===correctMonth?'1':'0',text:m})).sort(()=>Math.random()-0.5),correct:correctMonth},
+    {id:'o4',text:'What year is it?',opts:shuffleOpts(nearYears(correctYear)).slice(0,4).map(y=>({val:y===correctYear?'1':'0',text:String(y)})).sort(()=>Math.random()-0.5),correct:String(correctYear)},
+    {id:'o5',text:'What season are we in?',opts:shuffleOpts(seasons).map(s=>({val:s===correctSeason?'1':'0',text:s})),correct:correctSeason},
+  ];
+
+  const container=document.getElementById('orientCard');
+  container.innerHTML='';
+  OQS.forEach((q,i)=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`<div class="q-text"><span class="q-num">${i+1}</span>${q.text}</div>`;
+    const optsDiv=document.createElement('div');
+    buildOptions(optsDiv,q.id,q.opts);
+    card.appendChild(optsDiv);
+    container.appendChild(card);
+  });
+  container._qs=OQS;
+}
+
+function scoreOrient(){
+  const qs=document.getElementById('orientCard')._qs||[];
+  let s=0;
+  qs.forEach(q=>{const v=getSelected(q.id);if(v==='1')s+=2;});
+  scores.orient=s;
+}
+
+// ─── PART C: MEMORY ──────────────────────────────────────────────────────────
+const MEM_WORDS=['APPLE','BRIDGE','CANDLE','SUNSET','RIVER','TRUMPET','CARPET','DOCTOR','GARDEN','FOREST'];
+// Pick 7 words
+function initMemory(){
+  memWords=MEM_WORDS.slice().sort(()=>Math.random()-0.5).slice(0,7);
+  memPhase=0;
+  renderMemPhase();
+}
+
+function renderMemPhase(){
+  if(memPhase===0){
+    // Show words one by one with countdown
+    document.getElementById('memLearnSection').innerHTML=`
+      <div class="card">
+        <div class="q-text" style="text-align:center;">Study these 7 words carefully.<br>They will disappear — you will need to recall them twice.</div>
+        <div class="word-display" id="memWordDisplay">
+          <div class="big-word" id="memWordText">Press Start</div>
+          <div class="word-counter" id="memWordCounter">Word 0 of 7</div>
+        </div>
+        <div id="memWordGrid" class="word-grid"></div>
+      </div>`;
+    document.getElementById('memRecallSection').style.display='none';
+    document.getElementById('memBtn').textContent='Start showing words →';
+  }
+  if(memPhase===1){
+    // Showing words (handled by memNext)
+  }
+  if(memPhase===2){
+    // Immediate recall: free write
+    document.getElementById('memLearnSection').innerHTML='';
+    document.getElementById('memRecallSection').style.display='';
+    document.getElementById('memRecallSection').innerHTML=`
+      <div class="card">
+        <div class="q-text">Write down as many of the 7 words as you can remember. Separate each with a comma or new line.</div>
+        <div class="q-science">Free recall is tested immediately after learning (immediate recall) and again after a delay (Section G). The difference predicts memory consolidation.</div>
+        <textarea class="text-input" id="immRecallInput" rows="4" placeholder="e.g. apple, bridge, garden..."></textarea>
+        <div class="input-hint">Don't worry about spelling — approximate answers count.</div>
+      </div>`;
+    document.getElementById('memBtn').textContent='Submit Recall →';
+  }
+}
+
+let memWordIndex=0, memWordInterval=null;
+function memNext(){
+  if(memPhase===0){
+    memPhase=1;
+    memWordIndex=0;
+    document.getElementById('memBtn').disabled=true;
+    document.getElementById('memBtn').textContent='Showing words…';
+    const shown=[];
+    const grid=document.getElementById('memWordGrid');
+    if(grid)grid.innerHTML='';
+    function showNextWord(){
+      if(memWordIndex<memWords.length){
+        const w=memWords[memWordIndex];
+        document.getElementById('memWordText').textContent=w;
+        document.getElementById('memWordCounter').textContent='Word '+(memWordIndex+1)+' of '+memWords.length;
+        shown.push(w);
+        if(grid){
+          grid.innerHTML='';
+          shown.forEach(sw=>{
+            const slot=document.createElement('div');
+            slot.className='word-slot';
+            slot.textContent=sw;
+            grid.appendChild(slot);
+          });
+        }
+        memWordIndex++;
+        setTimeout(showNextWord,2200);
+      } else {
+        document.getElementById('memWordText').textContent='✓ Done!';
+        document.getElementById('memWordCounter').textContent='Now recall them…';
+        setTimeout(()=>{
+          memPhase=2;
+          renderMemPhase();
+          document.getElementById('memBtn').disabled=false;
+          document.getElementById('memBtn').textContent='Submit Recall →';
+        },1200);
+      }
+    }
+    showNextWord();
+    return;
+  }
+  if(memPhase===2){
+    const raw=document.getElementById('immRecallInput').value;
+    const recalled=raw.toLowerCase().split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+    memRecallAnswers=recalled;
+    let s=0;
+    memWords.forEach(w=>{
+      const match=recalled.some(r=>r.includes(w.toLowerCase().slice(0,4)));
+      if(match)s++;
+    });
+    scores.memImm=Math.round((s/memWords.length)*10);
+    goSection(4);
+  }
+}
+
+// ─── PART D: ATTENTION ───────────────────────────────────────────────────────
+// Task 1: Serial 7s (100, 93, 86, 79, 72, 65)
+// Task 2: Digit span backward (show 4 digits, type backward)
+const SERIAL_ANSWERS=[93,86,79,72,65];
+const DIGIT_SEQ=[3,8,1,7]; // 4-digit backward = 7,1,8,3
+
+function initAttn(){
+  attnPhase=0;
+  attnSubAnswers=[];
+  attnDigitAnswers=[];
+  renderAttnPhase();
+}
+
+function renderAttnPhase(){
+  if(attnPhase===0){
+    document.getElementById('attnSection').innerHTML=`
+      <div class="card">
+        <div class="card-title">Task 1 of 2 — Serial Subtraction</div>
+        <div class="card-body">Starting from <strong>100</strong>, subtract 7 each time.<br>Enter each answer in order. Do it mentally — no calculator!</div>
+        <div class="q-science">The 100-7 test measures sustained attention and working memory. Each correct step scores 1 point (max 5). MMSE, Folstein 1975.</div>
+        <div style="background:var(--primary-light);border-radius:14px;padding:16px;text-align:center;margin:14px 0;">
+          <div style="font-size:2.5rem;font-weight:900;color:var(--primary);">100</div>
+          <div style="font-size:0.85rem;color:var(--muted);margin-top:4px;">Start here · subtract 7 each time</div>
+        </div>
+        ${[0,1,2,3,4].map(i=>`
+          <div class="q-block">
+            <div class="q-text" style="font-size:0.9rem;">${i===0?'100 − 7 =':''} Step ${i+1}:</div>
+            <input class="text-input" type="number" id="sub${i}" placeholder="Your answer" inputmode="numeric" pattern="[0-9]*">
+          </div>`).join('')}
+      </div>`;
+    document.getElementById('attnBtn').textContent='Submit & next task →';
+  }
+  if(attnPhase===1){
+    document.getElementById('attnSection').innerHTML=`
+      <div class="card">
+        <div class="card-title">Task 2 of 2 — Digit Span Backwards</div>
+        <div class="card-body">A sequence of numbers will be shown. Then type them back <strong>in reverse order</strong>.</div>
+        <div class="q-science">Backward digit span tests working memory capacity. Normal range ≥4 digits backward (Wechsler, 1945). Reduced span is an early marker of cognitive decline.</div>
+        <div class="digit-display" id="digitDisplay">
+          <div class="digits" id="digitText">Press Start</div>
+          <div class="d-label" id="digitLabel">4-digit sequence</div>
+        </div>
+        <div id="digitInputArea" style="display:none;">
+          <div class="q-text">Type the numbers in <strong>REVERSE order</strong>:</div>
+          <input class="text-input" type="text" id="digitInput" placeholder="e.g. 7183" inputmode="numeric" maxlength="4">
+          <div class="input-hint">Enter all 4 digits together, reversed (last digit first).</div>
+        </div>
+      </div>`;
+    document.getElementById('attnBtn').textContent='Show me the digits →';
+  }
+  if(attnPhase===2){
+    document.getElementById('attnBtn').textContent='Submit answers →';
+    document.getElementById('attnBtn').onclick=submitAttn;
+  }
+}
+
+function attnNext(){
+  if(attnPhase===0){
+    // Score serial 7s
+    let s=0;
+    SERIAL_ANSWERS.forEach((ans,i)=>{
+      const v=parseInt(document.getElementById('sub'+i).value);
+      if(v===ans)s++;
+    });
+    attnSubAnswers=SERIAL_ANSWERS.map((ans,i)=>({correct:ans,given:parseInt(document.getElementById('sub'+i).value)||null}));
+    attnPhase=1;
+    renderAttnPhase();
+    return;
+  }
+  if(attnPhase===1){
+    // Show digit sequence
+    const disp=document.getElementById('digitText');
+    const lbl=document.getElementById('digitLabel');
+    const btn=document.getElementById('attnBtn');
+    btn.disabled=true;
+    btn.textContent='Watch…';
+    let i=0;
+    function showD(){
+      if(i<DIGIT_SEQ.length){
+        disp.style.animation='none';void disp.getBoundingClientRect();
+        disp.style.animation='numPop 0.3s ease';
+        disp.textContent=DIGIT_SEQ[i];
+        lbl.textContent='Digit '+(i+1)+' of '+DIGIT_SEQ.length;
+        i++;setTimeout(showD,900);
+      } else {
+        disp.textContent='✓';lbl.textContent='Now type them BACKWARDS';
+        document.getElementById('digitInputArea').style.display='';
+        attnPhase=2;
+        renderAttnPhase();
+        btn.disabled=false;
+      }
+    }
+    showD();
+    return;
+  }
+}
+function submitAttn(){
+  const raw=document.getElementById('digitInput').value.trim();
+  const correct=DIGIT_SEQ.slice().reverse().join('');
+  let digitScore=0;
+  for(let i=0;i<Math.min(raw.length,correct.length);i++){if(raw[i]===correct[i])digitScore++;}
+
+  let subScore=0;
+  SERIAL_ANSWERS.forEach((ans,i)=>{
+    if(attnSubAnswers[i]&&attnSubAnswers[i].given===ans)subScore++;
+  });
+  scores.attn=subScore+Math.round(digitScore/DIGIT_SEQ.length*5);
+  goSection(5);
+}
+
+// ─── PART E: LANGUAGE ────────────────────────────────────────────────────────
+const NAMING_QS=[
+  {id:'n1',text:'The large grey animal with a trunk and tusks, the heaviest land animal on Earth',opts:[{val:'1',text:'Elephant'},{val:'0',text:'Rhinoceros'},{val:'0',text:'Hippopotamus'},{val:'0',text:'Mammoth'}]},
+  {id:'n2',text:'A musical instrument with black and white keys, played by pressing them with fingers',opts:[{val:'1',text:'Piano'},{val:'0',text:'Organ'},{val:'0',text:'Harpsichord'},{val:'0',text:'Accordion'}]},
+  {id:'n3',text:'The part of a plant that anchors it in the ground and absorbs water and nutrients',opts:[{val:'1',text:'Root'},{val:'0',text:'Stem'},{val:'0',text:'Seed'},{val:'0',text:'Bulb'}]},
+  {id:'n4',text:'A tool with a long handle and a flat blade used for digging and lifting soil or snow',opts:[{val:'1',text:'Spade / Shovel'},{val:'0',text:'Rake'},{val:'0',text:'Hoe'},{val:'0',text:'Pitchfork'}]},
+  {id:'n5',text:'The small bony structure in the wrist joint connecting the forearm to the hand',opts:[{val:'1',text:'Wrist'},{val:'0',text:'Knuckle'},{val:'0',text:'Elbow'},{val:'0',text:'Thumb'}]},
+  {id:'n6',text:'A piece of equipment used to measure and display the current time, often hung on a wall',opts:[{val:'1',text:'Clock'},{val:'0',text:'Watch'},{val:'0',text:'Sundial'},{val:'0',text:'Timer'}]},
+];
+
+const SENT_REPEAT=[
+  'The cat sat on the warm red mat by the fire.',
+  'She went to the market early on a rainy Tuesday morning.',
+];
+
+function initLang(){
+  langPhase=0;
+  fluencyWords=[];
+  renderLangPhase();
+}
+
+function renderLangPhase(){
+  if(langPhase===0){
+    const sec=document.getElementById('langSection');
+    sec.innerHTML='';
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML='<div class="card-title">Task 1 of 3 — Naming</div><div class="card-body" style="margin-bottom:14px;">Read each description and select the correct word.</div>';
+    NAMING_QS.forEach((q,i)=>{
+      const block=document.createElement('div');
+      block.className='q-block';
+      block.innerHTML=`<div class="q-text"><span class="q-num">${i+1}</span>${q.text}</div>`;
+      const optsDiv=document.createElement('div');
+      buildOptions(optsDiv,q.id,q.opts.sort(()=>Math.random()-0.5));
+      block.appendChild(optsDiv);
+      card.appendChild(block);
+    });
+    sec.appendChild(card);
+    document.getElementById('langBtn').textContent='Next: Word Fluency →';
+  }
+  if(langPhase===1){
+    // Score naming
+    let ns=0;
+    NAMING_QS.forEach(q=>{const v=getSelected(q.id);if(v==='1')ns++;});
+    scores.lang=ns*2; // 6×2=12
+
+    // Fluency task
+    const sec=document.getElementById('langSection');
+    sec.innerHTML=`
+      <div class="card">
+        <div class="card-title">Task 2 of 3 — Category Fluency</div>
+        <div class="card-body">Type as many <strong>animals</strong> as you can think of in 60 seconds. Press Enter or the + button after each one.</div>
+        <div class="q-science">Category fluency (animals/minute): >15 = normal; 10–15 = mild decline; &lt;10 = significant concern. Verbal fluency subscale of ACE-III.</div>
+        <div class="timer-row">
+          <span class="timer-display" id="fluencyTimer">60</span>
+          <div class="timer-track"><div class="timer-fill" id="fluencyFill" style="width:100%"></div></div>
+          <span class="timer-label" id="fluencyCount">0 words</span>
+        </div>
+        <div class="fluency-box"><div class="fluency-tags" id="fluencyTags"></div></div>
+        <div class="fluency-input-row">
+          <input class="text-input" id="fluencyInput" placeholder="Type an animal…" style="flex:1" autocomplete="off">
+          <button class="f-submit" onclick="addFluencyWord()">+</button>
+        </div>
+      </div>`;
+    document.getElementById('langBtn').textContent='Start timer →';
+    document.getElementById('fluencyInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addFluencyWord();}});
+  }
+  if(langPhase===2){
+    // Score fluency, show sentence repetition
+    const n=fluencyWords.length;
+    const fluencyScore=n>=15?6:n>=10?4:n>=6?2:0;
+    scores.lang+=fluencyScore; // add to naming score
+
+    const sec=document.getElementById('langSection');
+    sec.innerHTML=`
+      <div class="card">
+        <div class="card-title">Task 3 of 3 — Sentence Repetition</div>
+        <div class="card-body">Read each sentence carefully, then type it back <strong>word for word</strong> as accurately as you can.</div>
+        <div class="q-science">Sentence repetition tests phonological working memory and syntactic processing — impaired early in semantic dementia and AD (Hodges & Patterson, 2007).</div>
+        ${SENT_REPEAT.map((s,i)=>`
+          <div class="q-block">
+            <div style="background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:10px;font-size:0.95rem;font-weight:700;color:var(--text);font-style:italic;">"${s}"</div>
+            <input class="text-input" id="sentRep${i}" placeholder="Type the sentence…" autocomplete="off">
+          </div>`).join('')}
+      </div>`;
+    document.getElementById('langBtn').textContent='Submit & continue →';
+  }
+}
+
+function addFluencyWord(){
+  if(fluencySecondsLeft<=0)return;
+  const inp=document.getElementById('fluencyInput');
+  const w=inp.value.trim().toLowerCase();
+  if(!w||fluencyWords.includes(w))return;
+  fluencyWords.push(w);
+  inp.value='';
+  const tag=document.createElement('div');
+  tag.className='f-tag';
+  tag.textContent=w;
+  document.getElementById('fluencyTags').appendChild(tag);
+  document.getElementById('fluencyCount').textContent=fluencyWords.length+' words';
+}
+
+function langNext(){
+  if(langPhase===0){langPhase=1;renderLangPhase();return;}
+  if(langPhase===1){
+    // Start fluency timer
+    if(fluencyTimer)clearInterval(fluencyTimer);
+    fluencySecondsLeft=60;
+    const btn=document.getElementById('langBtn');
+    btn.disabled=true;btn.textContent='Counting…';
+    const fill=document.getElementById('fluencyFill');
+    fill.style.transition='none';fill.style.width='100%';
+    fluencyTimer=setInterval(()=>{
+      fluencySecondsLeft--;
+      const el=document.getElementById('fluencyTimer');
+      if(el)el.textContent=fluencySecondsLeft;
+      const pct=fluencySecondsLeft/60*100;
+      if(fill){fill.style.transition='width 1s linear';fill.style.width=pct+'%';fill.classList.toggle('urgent',pct<25);}
+      if(fluencySecondsLeft<=0){
+        clearInterval(fluencyTimer);
+        document.getElementById('fluencyInput').disabled=true;
+        btn.disabled=false;
+        langPhase=2;renderLangPhase();
+      }
+    },1000);
+    return;
+  }
+  if(langPhase===2){
+    // Score sentence repetition
+    let sentScore=0;
+    SENT_REPEAT.forEach((s,i)=>{
+      const inp=document.getElementById('sentRep'+i);
+      if(!inp)return;
+      const given=inp.value.trim().toLowerCase().replace(/[.,'!?]/g,'');
+      const target=s.toLowerCase().replace(/[.,'!?]/g,'');
+      // Count matching words
+      const tw=target.split(' ');const gw=given.split(' ');
+      const matchPct=tw.filter(w=>gw.includes(w)).length/tw.length;
+      if(matchPct>=0.85)sentScore+=2;else if(matchPct>=0.6)sentScore+=1;
+    });
+    scores.lang=Math.min(18,scores.lang+sentScore);
+    goSection(6);
+  }
+}
+
+// ─── PART F: ABSTRACT REASONING ─────────────────────────────────────────────
+const ABSTRACT_QS=[
+  {id:'ab1',text:'In what way are a <strong>train</strong> and a <strong>bicycle</strong> similar?',science:'Similarities task: MoCA abstraction subscale (Nasreddine, 2005)',
+   opts:[{val:'2',text:'Both are means of transport / ways to travel'},{val:'1',text:'Both have wheels'},{val:'0',text:'They are not similar'},{val:'0',text:'Both use fuel'}]},
+  {id:'ab2',text:'In what way is a <strong>ruler</strong> similar to a <strong>clock</strong>?',science:'Measuring instruments: ACE-III abstraction',
+   opts:[{val:'2',text:'Both are measuring instruments / tools that measure something'},{val:'1',text:'Both are made of materials'},{val:'0',text:'They are not similar'},{val:'0',text:'Both have numbers'}]},
+  {id:'ab3',text:'In what way are <strong>anger</strong> and <strong>happiness</strong> similar?',science:'Abstract concept grouping (emotions): frontal lobe / executive function',
+   opts:[{val:'2',text:'Both are emotions / feelings'},{val:'1',text:'Both affect your mood'},{val:'0',text:'They are opposites'},{val:'0',text:'They are not similar'}]},
+  {id:'ab4',text:'What does the saying <em>"Every cloud has a silver lining"</em> mean?',science:'Proverb interpretation tests abstract thinking and frontal executive function (Gorenstein et al., 1989)',
+   opts:[{val:'2',text:'Even bad situations often have some positive aspect'},{val:'1',text:'Clouds can look shiny sometimes'},{val:'0',text:'Weather can be unpredictable'},{val:'0',text:'Silver can be found in many places'}]},
+];
+
+function buildAbstract(){
+  const card=document.getElementById('abstractCard');
+  card.innerHTML='';
+  ABSTRACT_QS.forEach((q,i)=>{
+    const block=document.createElement('div');
+    block.className='card';
+    block.innerHTML=`<div class="q-text"><span class="q-num">${i+1}</span>${q.text}</div><div class="q-science">${q.science}</div>`;
+    const optsDiv=document.createElement('div');
+    buildOptions(optsDiv,q.id,q.opts.sort(()=>Math.random()-0.5));
+    block.appendChild(optsDiv);
+    card.appendChild(block);
+  });
+}
+
+function scoreAbstract(){
+  let s=0;
+  ABSTRACT_QS.forEach(q=>{const v=getSelected(q.id);if(v)s+=parseInt(v);});
+  scores.abstract=Math.min(maxes.abstract,s);
+}
+
+// ─── PART G: DELAYED RECALL ──────────────────────────────────────────────────
+function buildDelayed(){
+  const card=document.getElementById('delayedCard');
+  card.innerHTML=`
+    <div class="card">
+      <div class="card-title">Free Recall</div>
+      <div class="card-body" style="margin-bottom:12px;">Without any hints, write down as many of the 7 words from Part C as you can remember. Separate with commas.</div>
+      <div class="q-science">Delayed free recall after ~10 minutes is the most sensitive single test for Alzheimer's disease (Sarazin et al., 2007). Even a 1-point decline vs immediate recall is clinically meaningful.</div>
+      <textarea class="text-input" id="delayedInput" rows="3" placeholder="Type the words you remember…"></textarea>
+    </div>
+    <div class="card">
+      <div class="card-title">Cued Recall — Category Hints</div>
+      <div class="card-body" style="margin-bottom:12px;">For any words you couldn't recall freely, use these category hints.</div>
+      <div id="cuedHints"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recognition</div>
+      <div class="card-body" style="margin-bottom:12px;">For each pair, tick the word that was in the original list.</div>
+      <div id="recognitionQs"></div>
+    </div>`;
+
+  // Cued hints
+  const CATEGORIES={APPLE:'a fruit',BRIDGE:'a structure',CANDLE:'a light source',SUNSET:'a natural event',RIVER:'a body of water',TRUMPET:'a musical instrument',CARPET:'a floor covering',DOCTOR:'an occupation',GARDEN:'an outdoor space',FOREST:'a natural landscape'};
+  const hintsDiv=document.getElementById('cuedHints');
+  memWords.forEach((w,i)=>{
+    const p=document.createElement('p');
+    p.style.cssText='font-size:0.88rem;color:var(--muted);margin-bottom:8px;';
+    p.innerHTML=`Word ${i+1}: <em>${CATEGORIES[w]||'a common noun'}</em> — <input class="text-input" id="cued${i}" style="width:180px;display:inline-block;padding:8px 12px;margin-left:8px;" placeholder="your answer">`;
+    hintsDiv.appendChild(p);
+  });
+
+  // Recognition pairs
+  const FOILS=['HOUSE','CHAIR','MUSIC','CLOUD','OCEAN','VIOLIN','PILLOW','NURSE','PARK','JUNGLE'];
+  const recDiv=document.getElementById('recognitionQs');
+  memWords.forEach((w,i)=>{
+    const foil=FOILS[i%FOILS.length];
+    const pair=[{val:'1',text:w},{val:'0',text:foil}].sort(()=>Math.random()-0.5);
+    const block=document.createElement('div');
+    block.className='q-block';
+    block.innerHTML=`<div class="q-text" style="font-size:0.88rem;">Pair ${i+1}: which word was in the list?</div>`;
+    const optsDiv=document.createElement('div');
+    buildOptions(optsDiv,'rec'+i,pair);
+    block.appendChild(optsDiv);
+    recDiv.appendChild(block);
+  });
+}
+
+function scoreDelayed(){
+  // Free recall
+  const raw=document.getElementById('delayedInput').value;
+  const recalled=raw.toLowerCase().split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  let freeScore=0;
+  memWords.forEach(w=>{if(recalled.some(r=>r.includes(w.toLowerCase().slice(0,4))))freeScore++;});
+
+  // Cued recall
+  let cuedScore=0;
+  memWords.forEach((w,i)=>{
+    const v=(document.getElementById('cued'+i)||{value:''}).value.toLowerCase().trim();
+    if(v&&w.toLowerCase().startsWith(v.slice(0,3)))cuedScore++;
+  });
+
+  // Recognition
+  let recScore=0;
+  memWords.forEach((_,i)=>{const v=getSelected('rec'+i);if(v==='1')recScore++;});
+
+  scores.delayed=Math.min(maxes.delayed, freeScore*2 + Math.min(cuedScore,memWords.length-freeScore) + Math.round(recScore/memWords.length*4));
+}
+
+// ─── PART H: VISUOSPATIAL ────────────────────────────────────────────────────
+function buildVisu(){
+  const card=document.getElementById('visuCard');
+  card.innerHTML=`
+    <div class="card">
+      <div class="card-title">Task 1 — Clock Reading</div>
+      <div class="card-body" style="margin-bottom:14px;">Look at each clock face and select the correct time shown.</div>
+      <div id="clockTasks"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Task 2 — Spatial Reasoning</div>
+      <div id="spatialTasks"></div>
+    </div>`;
+
+  const CLOCKS=[
+    {h:10,m:10,correct:'10:10',opts:['10:10','2:50','10:50','2:10'],science:'Clock reading tests right parietal lobe function (visuospatial processing). Clock Drawing Test, Shulman 2000.'},
+    {h:3,m:45,correct:'3:45',opts:['3:45','9:15','3:15','9:45'],science:''},
+    {h:7,m:20,correct:'7:20',opts:['7:20','1:35','4:35','7:35'],science:''},
+  ];
+
+  const ct=document.getElementById('clockTasks');
+  CLOCKS.forEach((clk,i)=>{
+    const block=document.createElement('div');
+    block.style.marginBottom='18px';
+    // Draw SVG clock
+    const rad=80;const cx=90;const cy=90;
+    const hAngle=((clk.h%12)+clk.m/60)/12*360-90;
+    const mAngle=clk.m/60*360-90;
+    const toXY=(angle,r)=>({x:cx+r*Math.cos(angle*Math.PI/180),y:cy+r*Math.sin(angle*Math.PI/180)});
+    const hPos=toXY(hAngle,45);const mPos=toXY(mAngle,65);
+    const ticks=Array.from({length:12},(_,n)=>{const a=(n/12)*360-90;const p1=toXY(a,72);const p2=toXY(a,80);return`<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#6c63ff" stroke-width="${n%3===0?2.5:1.5}" stroke-linecap="round"/>`}).join('');
+    const nums=[12,1,2,3,4,5,6,7,8,9,10,11].map((n,idx)=>{const a=(idx/12)*360-90;const p=toXY(a,62);return`<text x="${p.x}" y="${p.y}" text-anchor="middle" dominant-baseline="middle" font-size="10" font-family="Nunito,sans-serif" font-weight="700" fill="#2d2b4e">${n}</text>`;}).join('');
+    const svg=`<svg class="clock-face" viewBox="0 0 180 180" width="160" height="160"><circle cx="${cx}" cy="${cy}" r="${rad}" fill="white" stroke="#6c63ff" stroke-width="3"/>${ticks}${nums}<line x1="${cx}" y1="${cy}" x2="${hPos.x}" y2="${hPos.y}" stroke="#2d2b4e" stroke-width="4" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${mPos.x}" y2="${mPos.y}" stroke="#6c63ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="4" fill="#2d2b4e"/></svg>`;
+    block.innerHTML=`<div class="clock-wrap">${svg}</div>`;
+    if(clk.science){block.innerHTML+=`<div class="q-science">${clk.science}</div>`;}
+    const optsDiv=document.createElement('div');
+    const opts=clk.opts.map(o=>({val:o===clk.correct?'1':'0',text:o})).sort(()=>Math.random()-0.5);
+    buildOptions(optsDiv,'clock'+i,opts);
+    block.appendChild(optsDiv);
+    ct.appendChild(block);
+  });
+
+  // Spatial reasoning
+  const SPATIAL=[
+    {id:'sp1',text:'If you are facing North and turn 90° clockwise, which direction are you now facing?',science:'Spatial orientation: parietal cortex function, ACE-III visuospatial subscale',opts:[{val:'1',text:'East'},{val:'0',text:'South'},{val:'0',text:'West'},{val:'0',text:'North'}]},
+    {id:'sp2',text:'Which of these shapes has the most sides: triangle, hexagon, square, pentagon?',science:'Visuospatial reasoning',opts:[{val:'1',text:'Hexagon (6 sides)'},{val:'0',text:'Pentagon (5 sides)'},{val:'0',text:'Square (4 sides)'},{val:'0',text:'Triangle (3 sides)'}]},
+    {id:'sp3',text:'A clock shows 6:30. The minute hand is pointing at:',science:'Clock interpretation: CDT (Shulman, 2000)',opts:[{val:'1',text:'6 (straight down)'},{val:'0',text:'12 (straight up)'},{val:'0',text:'3 (right side)'},{val:'0',text:'9 (left side)'}]},
+  ];
+
+  const st=document.getElementById('spatialTasks');
+  SPATIAL.forEach((q,i)=>{
+    const block=document.createElement('div');
+    block.className='q-block';
+    block.innerHTML=`<div class="q-text"><span class="q-num">${i+1}</span>${q.text}</div><div class="q-science">${q.science}</div>`;
+    const optsDiv=document.createElement('div');
+    buildOptions(optsDiv,q.id,q.opts.sort(()=>Math.random()-0.5));
+    block.appendChild(optsDiv);
+    st.appendChild(block);
+  });
+}
+
+function scoreVisu(){
+  let s=0;
+  // Clock tasks (3 clocks × 1 pt = 3)
+  for(let i=0;i<3;i++){const v=getSelected('clock'+i);if(v==='1')s++;}
+  // Spatial (3 × 1 pt = 3)
+  ['sp1','sp2','sp3'].forEach(id=>{const v=getSelected(id);if(v==='1')s++;});
+  scores.visuosp=s;
+}
+
+// ─── RESULTS ─────────────────────────────────────────────────────────────────
+function showResults(){
+  // Normalise all domains to percentages, then weight
+  const weights={behav:0.15,orient:0.10,memImm:0.12,attn:0.10,lang:0.18,abstract:0.10,delayed:0.15,visuosp:0.10};
+  let total=0;
+  Object.keys(scores).forEach(k=>{
+    const pct=scores[k]/maxes[k];
+    total+=pct*weights[k]*100;
+  });
+  const finalScore=Math.round(total);
+
+  let stage,stageClass,stageTitle,stageDesc,stageRec;
+  if(finalScore>=82){
+    stage='normal';stageClass='stage-normal';
+    stageTitle='✅ Within normal limits';
+    stageDesc='Your results do not suggest significant cognitive concerns at this time. Cognitive function appears consistent with your age group. Continue brain-healthy habits and consider retesting annually.';
+    stageRec='Keep up daily brain training, physical exercise, and social engagement. Retest in 12 months.';
+  } else if(finalScore>=65){
+    stage='mild';stageClass='stage-mild';
+    stageTitle='⚠️ Mild cognitive concerns';
+    stageDesc='Some areas show responses consistent with mild cognitive change. This may reflect normal ageing, stress, poor sleep, or early mild cognitive impairment (MCI). MCI does not always progress to dementia — many people remain stable or improve.';
+    stageRec='Discuss these results with your GP. A formal cognitive assessment (MoCA or ACE-III) administered by a clinician is recommended.';
+  } else if(finalScore>=45){
+    stage='moderate';stageClass='stage-moderate';
+    stageTitle='🟠 Moderate cognitive concerns';
+    stageDesc='Several areas show responses that may indicate moderate cognitive difficulties. This warrants professional evaluation. A GP referral to a memory clinic or neurologist is strongly advised.';
+    stageRec='Please make an appointment with your GP as soon as possible and share these results. Do not drive or make major decisions until assessed.';
+  } else {
+    stage='significant';stageClass='stage-significant';
+    stageTitle='🔴 Significant cognitive concerns';
+    stageDesc='Multiple areas show responses consistent with significant cognitive difficulties. This assessment strongly recommends professional evaluation. Please do not delay in seeking medical advice.';
+    stageRec='Please seek medical attention promptly. Show these results to your GP or take someone with you to the appointment.';
+  }
+
+  // Domain names and pct
+  const domainInfo=[
+    {key:'behav',   label:'Behaviour & Self-Report',emoji:'📋'},
+    {key:'orient',  label:'Orientation',            emoji:'🗓️'},
+    {key:'memImm',  label:'Immediate Memory',       emoji:'💭'},
+    {key:'attn',    label:'Attention',               emoji:'🎯'},
+    {key:'lang',    label:'Language',                emoji:'🗣️'},
+    {key:'abstract',label:'Abstract Reasoning',     emoji:'🔍'},
+    {key:'delayed', label:'Delayed Recall',          emoji:'⏳'},
+    {key:'visuosp', label:'Visuospatial',            emoji:'👁️'},
+  ];
+
+  // Build results HTML
+  const circ=282; // 2π×45
+  const arc=circ-(circ*finalScore/100);
+
+  let html=`
+    <div class="result-hero">
+      <div class="result-score-ring">
+        <svg class="score-svg" viewBox="0 0 100 100">
+          <circle class="score-bg" cx="50" cy="50" r="45"/>
+          <circle class="score-arc" cx="50" cy="50" r="45" stroke-dasharray="${circ}" stroke-dashoffset="${circ}" id="scoreArcEl"/>
+        </svg>
+        <div class="score-num-big" id="scoreNumEl">0</div>
+        <div class="score-label-sm">out of 100</div>
+      </div>
+      <h2>${stageTitle}</h2>
+      <p>${stageDesc}</p>
+    </div>
+
+    <div class="stage-card ${stageClass}">
+      <div class="stage-title">Recommendation</div>
+      <div class="stage-body">${stageRec}</div>
+    </div>
+
+    <h3 style="font-size:1rem;font-weight:800;padding:0 4px;margin-bottom:12px;">Domain Breakdown</h3>
+    <div class="domain-grid">
+      ${domainInfo.map(d=>{
+        const pct=Math.round(scores[d.key]/maxes[d.key]*100);
+        const col=pct>=80?'var(--green)':pct>=55?'var(--yellow)':'var(--accent)';
+        return`<div class="domain-card">
+          <div class="domain-name">${d.emoji} ${d.label}</div>
+          <div class="domain-score" style="color:${col}">${pct}%</div>
+          <div class="domain-bar"><div class="domain-fill" style="width:${pct}%;background:${col}"></div></div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-title">📊 What do these scores mean?</div>
+      <div class="card-body">
+        <strong>Behaviour & Self-Report</strong> — based on changes you've noticed over 2–3 years. Subjective memory complaints are an early risk indicator.<br><br>
+        <strong>Orientation</strong> — knowing the date, month, year, and season. Disorientation is a hallmark of moderate dementia.<br><br>
+        <strong>Immediate & Delayed Memory</strong> — together these measure encoding (learning) and consolidation (retaining). A large gap between immediate and delayed recall is the strongest predictor of Alzheimer's disease.<br><br>
+        <strong>Language</strong> — naming difficulties and reduced verbal fluency (fewer than 10 animals/min) are early markers in multiple dementia types.<br><br>
+        <strong>Attention</strong> — the serial 7s test is sensitive to frontal-subcortical involvement. Digit span measures working memory capacity.<br><br>
+        <strong>Abstract Reasoning</strong> — executive function and frontal lobe integrity. Preserved in early AD, often impaired in frontotemporal dementia.<br><br>
+        <strong>Visuospatial</strong> — right parietal lobe function. Clock reading difficulties appear in moderate Alzheimer's and Lewy body dementia.
+      </div>
+    </div>
+
+    <div class="refs-card">
+      <h3>📖 Scientific References</h3>
+      <div class="ref-item">Folstein MF et al. (1975). "Mini-Mental State Examination." <em>Journal of Psychiatric Research</em>, 12(3):189–198.</div>
+      <div class="ref-item">Nasreddine ZS et al. (2005). "The Montreal Cognitive Assessment (MoCA)." <em>Journal of the American Geriatrics Society</em>, 53(4):695–699.</div>
+      <div class="ref-item">Hsieh S et al. (2013). "Validation of the Addenbrooke's Cognitive Examination III (ACE-III)." <em>Journal of Neurology, Neurosurgery & Psychiatry</em>, 84(9):964–969.</div>
+      <div class="ref-item">Galvin JE et al. (2005). "The AD8: A brief informant interview to detect dementia." <em>Neurology</em>, 65(4):559–564.</div>
+      <div class="ref-item">Sarazin M et al. (2007). "Amnesic syndrome of the medial temporal type identifies prodromal AD." <em>Neurology</em>, 69(19):1859–1867.</div>
+      <div class="ref-item">Cummings JL et al. (1994). "Neuropsychiatric Inventory (NPI)." <em>Neurology</em>, 44(12):2308–2314.</div>
+      <div class="ref-item">Lawton MP & Brody EM (1969). "Assessment of older people: IADL scale." <em>The Gerontologist</em>, 9(3):179–186.</div>
+      <div class="ref-item">Wechsler D (1945). Wechsler Memory Scale. The Psychological Corporation, New York.</div>
+      <div class="ref-item">Shulman KI (2000). "Clock-drawing: is it the ideal cognitive screening test?" <em>International Journal of Geriatric Psychiatry</em>, 15(6):548–561.</div>
+      <div class="ref-item">Livingston G et al. (2020). "Dementia prevention, intervention, and care: 2020 report of the Lancet Commission." <em>The Lancet</em>, 396(10248):413–446.</div>
+    </div>
+
+    <div class="card">
+      <ul class="rec-list">
+        <li><span class="rec-icon">🩺</span><span>Share these results with your GP — print this page or take a screenshot.</span></li>
+        <li><span class="rec-icon">🔁</span><span>Retest every 3–6 months to track changes over time.</span></li>
+        <li><span class="rec-icon">⚡</span><span>Play Quick Flash daily — the game most directly linked to reducing dementia risk in clinical research.</span></li>
+        <li><span class="rec-icon">🚶</span><span>30 minutes of aerobic exercise 5×/week is associated with reduced hippocampal atrophy.</span></li>
+        <li><span class="rec-icon">😴</span><span>Prioritise sleep — amyloid clearance from the brain happens primarily during deep sleep.</span></li>
+      </ul>
+    </div>
+
+    <div class="disclaimer" style="margin-top:8px;">
+      <strong>⚠️ Reminder</strong>
+      This screening tool is not a clinical diagnosis. Results are indicative only and may be affected by tiredness, anxiety, illness, or unfamiliarity with digital interfaces. Always consult a qualified medical professional.
+    </div>
+
+    <a href="index.html" class="big-btn" style="text-decoration:none;display:block;text-align:center;margin-top:16px;">← Back to Brain Spark</a>
+  `;
+
+  document.getElementById('resultsContent').innerHTML=html;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('secResults').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateProgress(9);
+
+  // Animate score
+  setTimeout(()=>{
+    const arcEl=document.getElementById('scoreArcEl');
+    const numEl=document.getElementById('scoreNumEl');
+    if(arcEl){arcEl.style.transition='stroke-dashoffset 1.8s ease';arcEl.style.strokeDashoffset=arc;}
+    let n=0;
+    const interval=setInterval(()=>{n=Math.min(n+2,finalScore);if(numEl)numEl.textContent=n;if(n>=finalScore)clearInterval(interval);},25);
+  },300);
+
+  // Save to localStorage
+  const result={date:new Date().toISOString(),score:finalScore,stage,domains:{}};
+  Object.keys(scores).forEach(k=>{result.domains[k]=Math.round(scores[k]/maxes[k]*100);});
+  const history=JSON.parse(localStorage.getItem('cogTestHistory')||'[]');
+  history.push(result);
+  localStorage.setItem('cogTestHistory',JSON.stringify(history.slice(-10)));
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+// Radio click delegation
+document.addEventListener('click',e=>{
+  const opt=e.target.closest('.opt');
+  if(opt){
+    const radio=opt.querySelector('input[type=radio]');
+    if(radio){
+      radio.checked=true;
+      document.querySelectorAll(`[name="${radio.name}"]`).forEach(r=>r.closest('.opt').classList.remove('selected'));
+      opt.classList.add('selected');
+    }
+  }
+});
+</script>
+</body>
+</html>

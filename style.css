@@ -159,6 +159,22 @@ body {
 /* FOOTER */
 .footer { text-align: center; padding: 24px 20px 10px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
 
+/* TEST BANNER */
+.test-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(135deg, #2d2b4e, #4a4580);
+  border-radius: var(--radius); padding: 18px 20px;
+  text-decoration: none; color: white; margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(45,43,78,0.3);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.test-banner:active { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(45,43,78,0.4); }
+.test-banner-left { display: flex; align-items: center; gap: 14px; }
+.test-banner-icon { font-size: 2.2rem; }
+.test-banner-title { font-size: 1rem; font-weight: 800; margin-bottom: 3px; }
+.test-banner-sub { font-size: 0.8rem; opacity: 0.8; }
+.test-banner-arrow { font-size: 1.4rem; opacity: 0.7; }
+
 /* ===== SHARED GAME STYLES ===== */
 .game-page { max-width: 680px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px; }
 
