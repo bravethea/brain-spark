@@ -147,6 +147,15 @@ body {
 }
 .tip-icon { font-size: 1.5rem; flex-shrink: 0; }
 
+.tips-category-label {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin: 22px 0 12px;
+  padding-left: 4px;
+  letter-spacing: 0.2px;
+}
+
 /* FOOTER */
 .footer { text-align: center; padding: 24px 20px 10px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
 
