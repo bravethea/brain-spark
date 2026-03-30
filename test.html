@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Cognitive Health Assessment – Brain Spark</title>
+  <title>Brain Health Check – Brain Spark</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -204,6 +204,46 @@
     .opt.correct{border-color:var(--green);background:#d4f7e9;}
     .opt.wrong{border-color:var(--accent);background:#fde0e0;}
 
+    /* CONSENT GATE */
+    .consent-overlay{
+      position:fixed;inset:0;background:rgba(45,43,78,0.72);
+      z-index:500;display:none;align-items:flex-end;justify-content:center;
+    }
+    .consent-overlay.show{display:flex;}
+    .consent-box{
+      background:white;border-radius:28px 28px 0 0;
+      padding:32px 24px 36px;width:100%;max-width:680px;
+      animation:slideUp 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .consent-icon{font-size:2.4rem;margin-bottom:12px;text-align:center;}
+    .consent-box h2{font-size:1.3rem;font-weight:900;margin-bottom:10px;text-align:center;}
+    .consent-box>p{font-size:0.88rem;color:var(--muted);text-align:center;line-height:1.5;margin-bottom:16px;}
+    .consent-list{list-style:none;padding:0;margin-bottom:20px;display:flex;flex-direction:column;gap:8px;}
+    .consent-list li{font-size:0.85rem;color:var(--text);line-height:1.4;padding-left:20px;position:relative;}
+    .consent-list li::before{content:'·';position:absolute;left:6px;color:var(--primary);font-weight:900;}
+    .consent-check-row{
+      display:flex;align-items:center;gap:12px;
+      background:#f7f6ff;border:1.5px solid #e0dcff;border-radius:14px;
+      padding:14px 16px;margin-bottom:16px;cursor:pointer;
+    }
+    .consent-check-row input{display:none;}
+    .consent-check-box{
+      width:22px;height:22px;border-radius:7px;
+      border:2px solid #c8c2ff;flex-shrink:0;
+      background:white;transition:all 0.15s;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .consent-check-row.checked .consent-check-box{
+      background:var(--primary);border-color:var(--primary);
+    }
+    .consent-check-row.checked .consent-check-box::after{
+      content:'✓';color:white;font-size:0.8rem;font-weight:900;
+    }
+    .consent-check-label{font-size:0.88rem;font-weight:700;color:var(--text);}
+    #consentBtn:disabled{opacity:0.4;pointer-events:none;}
+    .consent-cancel{display:block;text-align:center;margin-top:12px;color:var(--muted);font-size:0.85rem;font-weight:700;text-decoration:none;}
+
     @media(max-width:500px){
       html{font-size:15px;}
       .domain-grid{grid-template-columns:1fr;}
@@ -215,7 +255,7 @@
 
   <div class="header">
     <a href="index.html" class="back-btn">←</a>
-    <span class="header-title">🧠 Cognitive Health Assessment</span>
+    <span class="header-title">🧠 Brain Health Check</span>
     <span class="section-badge" id="sectionBadge">Intro</span>
   </div>
 
@@ -234,8 +274,8 @@
     <div style="padding:20px 0 0;">
       <div class="section-intro">
         <div class="s-icon">🧠</div>
-        <h2>Cognitive Health Assessment</h2>
-        <p>A comprehensive, science-backed screening tool for memory, language, attention, and behaviour — covering early, mild, and moderate cognitive changes.</p>
+        <h2>Brain Health Check</h2>
+        <p>A self-guided wellness check across 8 areas of brain health — including memory, language, attention, and orientation. Based on established research tools used in clinical practice.</p>
       </div>
 
       <div class="disclaimer">
@@ -289,7 +329,7 @@
         </div>
       </div>
 
-      <button class="big-btn" onclick="goSection(1)">Begin Assessment →</button>
+      <button class="big-btn" onclick="showConsentGate()">Begin Check →</button>
     </div>
   </div>
 
@@ -406,7 +446,7 @@
       <p>Can you remember the words from Part C? This tests long-term memory consolidation.</p>
     </div>
     <div class="card">
-      <span class="science-ref">Delayed free recall is the single strongest predictor of Alzheimer's disease (Sarazin et al., 2007, Archives of Neurology) · Scoring from ACE-III</span>
+      <span class="science-ref">Delayed recall is a key area studied in memory research · Adapted from ACE-III (Hsieh et al., 2013) · Sarazin et al., 2007</span>
     </div>
 
     <div id="delayedCard"></div>
@@ -438,6 +478,28 @@
   </div>
 
 </div><!-- /app -->
+
+<!-- CONSENT GATE -->
+<div class="consent-overlay" id="consentOverlay">
+  <div class="consent-box">
+    <div class="consent-icon">📋</div>
+    <h2>Before you begin</h2>
+    <p>This is a <strong>self-guided wellness check</strong>, not a medical test. It cannot diagnose any condition.</p>
+    <ul class="consent-list">
+      <li>Results are for personal reflection only</li>
+      <li>Many everyday factors affect performance — tiredness, stress, medication, and mood can all lower scores</li>
+      <li>If you have health concerns, please speak to a doctor — not this app</li>
+      <li>This tool does not store or share your data</li>
+    </ul>
+    <label class="consent-check-row" id="consentCheckRow">
+      <input type="checkbox" id="consentCheckbox">
+      <span class="consent-check-box" id="consentCheckBox"></span>
+      <span class="consent-check-label">I understand this is not a medical assessment</span>
+    </label>
+    <button class="big-btn" id="consentBtn" onclick="acceptConsent()" disabled>Continue →</button>
+    <a href="index.html" class="consent-cancel">Cancel</a>
+  </div>
+</div>
 
 <script>
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -1356,6 +1418,27 @@ function showResults(){
   history.push(result);
   localStorage.setItem('cogTestHistory',JSON.stringify(history.slice(-10)));
 }
+
+// ─── CONSENT GATE ────────────────────────────────────────────────────────────
+function showConsentGate(){
+  document.getElementById('consentOverlay').classList.add('show');
+}
+function acceptConsent(){
+  document.getElementById('consentOverlay').classList.remove('show');
+  goSection(1);
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const row=document.getElementById('consentCheckRow');
+  const cb=document.getElementById('consentCheckbox');
+  const btn=document.getElementById('consentBtn');
+  if(row){
+    row.addEventListener('click',()=>{
+      cb.checked=!cb.checked;
+      row.classList.toggle('checked',cb.checked);
+      btn.disabled=!cb.checked;
+    });
+  }
+});
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 // Radio click delegation
