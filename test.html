@@ -147,6 +147,55 @@
     .rec-list li:last-child{border-bottom:none;}
     .rec-icon{font-size:1.2rem;flex-shrink:0;}
 
+    /* RESULTS — new warm components */
+    .result-thankyou{
+      background:linear-gradient(135deg,#fff8e1,#fffde7);
+      border-radius:var(--radius);padding:20px;
+      display:flex;gap:14px;align-items:flex-start;
+      margin:20px 20px 0;
+      border:1px solid #ffe082;
+    }
+    .result-thankyou-icon{font-size:1.8rem;flex-shrink:0;}
+    .result-thankyou p{font-size:0.9rem;line-height:1.6;color:#5a4a00;font-weight:600;}
+
+    .encourage-card{
+      background:linear-gradient(135deg,#e8f5e9,#f1f8e9);
+      border-radius:16px;padding:18px;margin:0 20px 16px;
+      display:flex;gap:12px;align-items:flex-start;
+      border:1px solid #a5d6a7;
+    }
+    .encourage-icon{font-size:1.6rem;flex-shrink:0;}
+    .encourage-card p{font-size:0.88rem;line-height:1.6;color:#1b5e20;font-weight:600;}
+
+    .context-card{
+      background:#f8f9ff;border:1px solid #e0dcff;
+      border-radius:16px;padding:18px;margin:0 20px 16px;
+    }
+    .context-title{font-size:0.9rem;font-weight:800;margin-bottom:8px;color:var(--text);}
+    .context-body{font-size:0.85rem;line-height:1.6;color:var(--muted);}
+
+    .next-steps{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+    .next-step{display:flex;gap:10px;align-items:flex-start;font-size:0.85rem;font-weight:700;line-height:1.4;}
+    .ns-dot{color:var(--primary);font-size:1rem;flex-shrink:0;margin-top:1px;}
+
+    /* Domain list (vertical, richer) */
+    .domain-list{display:flex;flex-direction:column;gap:16px;}
+    .domain-row{}
+    .domain-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+    .domain-row-name{font-size:0.88rem;font-weight:800;color:var(--text);}
+    .domain-row-score{font-size:0.88rem;font-weight:800;display:flex;align-items:center;gap:6px;}
+    .domain-label-pill{font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:50px;}
+    .domain-explainer{font-size:0.78rem;color:var(--muted);line-height:1.5;margin-top:6px;}
+
+    /* Support card */
+    .support-card{background:var(--card);border-radius:var(--radius);padding:20px;margin:0 0 16px;box-shadow:var(--shadow);border-left:4px solid var(--green);}
+    .support-title{font-size:1rem;font-weight:800;margin-bottom:14px;color:var(--text);}
+    .support-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .support-item{background:#f7f6ff;border-radius:12px;padding:12px;}
+    .support-org{font-size:0.82rem;font-weight:800;color:var(--primary);margin-bottom:4px;}
+    .support-detail{font-size:0.78rem;line-height:1.5;color:var(--muted);}
+    @media(max-width:500px){.support-grid{grid-template-columns:1fr;}}
+
     /* Overlap figures */
     .overlap-img{display:flex;justify-content:center;margin:12px 0;}
     .overlap-box{background:white;border:2px solid #e0dcff;border-radius:16px;padding:20px;position:relative;display:flex;align-items:center;justify-content:center;width:240px;height:160px;}
@@ -1080,27 +1129,35 @@ function showResults(){
   });
   const finalScore=Math.round(total);
 
-  let stage,stageClass,stageTitle,stageDesc,stageRec;
+  let stage,stageClass,stageTitle,stageDesc,stageRec,stageNextSteps,stageEncourage;
   if(finalScore>=82){
     stage='normal';stageClass='stage-normal';
-    stageTitle='✅ Within normal limits';
-    stageDesc='Your results do not suggest significant cognitive concerns at this time. Cognitive function appears consistent with your age group. Continue brain-healthy habits and consider retesting annually.';
-    stageRec='Keep up daily brain training, physical exercise, and social engagement. Retest in 12 months.';
+    stageTitle='Your results look reassuring';
+    stageDesc='Based on your responses across all eight areas, your cognitive function appears to be within the range expected for your age group. There are no significant patterns of concern in these results today.';
+    stageEncourage='This is genuinely good news — and completing this assessment shows you are being proactive about your brain health, which matters enormously.';
+    stageRec='Continue the habits that protect your brain: daily movement, good sleep, social connection, and mental stimulation. Consider retesting in 12 months to build a personal baseline over time.';
+    stageNextSteps=['Keep up daily brain training games — especially Quick Flash','Tell your GP you completed a cognitive screen and the results were normal','Schedule an annual retest to track your baseline over time'];
   } else if(finalScore>=65){
     stage='mild';stageClass='stage-mild';
-    stageTitle='⚠️ Mild cognitive concerns';
-    stageDesc='Some areas show responses consistent with mild cognitive change. This may reflect normal ageing, stress, poor sleep, or early mild cognitive impairment (MCI). MCI does not always progress to dementia — many people remain stable or improve.';
-    stageRec='Discuss these results with your GP. A formal cognitive assessment (MoCA or ACE-III) administered by a clinician is recommended.';
+    stageTitle='Some areas worth keeping an eye on';
+    stageDesc='A few areas of your results showed responses that may suggest mild cognitive change. It is important to know that this is very common, and the causes are often entirely treatable — poor sleep, stress, anxiety, low mood, thyroid issues, vitamin deficiencies, and medication side effects can all affect cognitive performance on a day like today.';
+    stageEncourage='Noticing these changes and taking this assessment is an act of self-care. The earlier any changes are identified, the more options there are. Many people with mild cognitive changes remain stable for years, and some improve significantly.';
+    stageRec='We gently encourage you to share these results with your GP. They can rule out treatable causes and, if needed, refer you to a memory specialist for a full clinical assessment (such as the MoCA or ACE-III). You do not need to go alone — bring a family member or friend for support.';
+    stageNextSteps=['Book a GP appointment and bring or show these results','Ask your GP to check: thyroid function, B12, folate, iron, and mood','Consider a formal clinical memory assessment (MoCA or ACE-III)','Continue daily brain training — evidence shows it helps'];
   } else if(finalScore>=45){
     stage='moderate';stageClass='stage-moderate';
-    stageTitle='🟠 Moderate cognitive concerns';
-    stageDesc='Several areas show responses that may indicate moderate cognitive difficulties. This warrants professional evaluation. A GP referral to a memory clinic or neurologist is strongly advised.';
-    stageRec='Please make an appointment with your GP as soon as possible and share these results. Do not drive or make major decisions until assessed.';
+    stageTitle='These results suggest it\'s time to speak to a doctor';
+    stageDesc='Across several areas, your responses show patterns that may indicate some cognitive difficulties worth investigating properly. A screen like this cannot tell us why — only a doctor can do that, and the reasons can range from highly treatable conditions to early-stage changes that benefit enormously from early support.';
+    stageEncourage='Please know: reaching out for help at this stage is one of the most important things you can do. There is no shame in these results — only wisdom in taking them seriously. You are not alone, and there is real help available.';
+    stageRec='Please make an appointment with your GP soon and share these results with them. A referral to a memory clinic or neurologist will allow for a full, proper assessment in a supportive environment. If possible, bring someone you trust to the appointment — a second set of ears always helps.';
+    stageNextSteps=['Contact your GP this week — mention you have cognitive screening results to discuss','Ask about a referral to your local memory clinic','Bring a trusted friend or family member to appointments','In the UK: call the Alzheimer\'s Society helpline on 0333 150 3456 — they are kind and helpful'];
   } else {
     stage='significant';stageClass='stage-significant';
-    stageTitle='🔴 Significant cognitive concerns';
-    stageDesc='Multiple areas show responses consistent with significant cognitive difficulties. This assessment strongly recommends professional evaluation. Please do not delay in seeking medical advice.';
-    stageRec='Please seek medical attention promptly. Show these results to your GP or take someone with you to the appointment.';
+    stageTitle='Please reach out to a doctor — you deserve support';
+    stageDesc='Your responses across multiple areas show patterns that suggest significant cognitive difficulties. This assessment cannot diagnose anything — only a qualified clinician can do that — but these results are a strong signal that a proper medical evaluation is needed as soon as possible.';
+    stageEncourage='It takes real courage to complete something like this. Whatever is happening, you are not alone — and reaching out now means getting access to the support, care, and resources you deserve. There are people who specialise in exactly this, and they are ready to help.';
+    stageRec='Please contact your GP as soon as possible, or ask a family member to help you do so. Show or describe these results. If you are in the UK, the Alzheimer\'s Society helpline (0333 150 3456) offers free, confidential, and compassionate support — you can call even before seeing a doctor.';
+    stageNextSteps=['Contact your GP today or ask a trusted person to help you do so','Bring a family member or close friend to your appointment','UK: Alzheimer\'s Society helpline — 0333 150 3456 (free, confidential)','UK: NHS Memory Assessment Service — ask your GP for a referral','Do not make major decisions (financial, legal) without support right now'];
   }
 
   // Domain names and pct
@@ -1119,7 +1176,30 @@ function showResults(){
   const circ=282; // 2π×45
   const arc=circ-(circ*finalScore/100);
 
+  // Find strongest and weakest domains for personalised feedback
+  const domainPcts=domainInfo.map(d=>({...d,pct:Math.round(scores[d.key]/maxes[d.key]*100)}));
+  const strongest=[...domainPcts].sort((a,b)=>b.pct-a.pct).slice(0,2);
+  const weakest=[...domainPcts].sort((a,b)=>a.pct-b.pct).filter(d=>d.pct<70).slice(0,2);
+
+  const domainExplainers={
+    behav:  {what:'Behavioural & everyday function',why:'Tracks changes in memory, mood, daily tasks and social engagement compared to a few years ago.',context:'Subjective memory complaints and changes in daily function are among the earliest detectable signals of cognitive change — but they are also very commonly caused by stress, depression, and poor sleep.'},
+    orient: {what:'Orientation in time and place',why:'Knowing the date, day, month, year, and season.',context:'Most people miss 1–2 orientation questions occasionally — it becomes clinically significant when errors are frequent or involve the year.'},
+    memImm: {what:'Immediate memory',why:'How many of the 7 words you could recall straight after seeing them.',context:'Immediate recall reflects attention and the initial encoding of new information. Even healthy people typically recall 5–7 words immediately.'},
+    attn:   {what:'Attention & working memory',why:'Serial subtraction (100−7) and remembering digits in reverse.',context:'These tasks require holding information in mind while manipulating it — a core function of the frontal lobes. Fatigue, anxiety, and medication can significantly affect performance.'},
+    lang:   {what:'Language & verbal fluency',why:'Naming objects from descriptions, generating animal names, and repeating sentences.',context:'Subtle word-finding difficulties and reduced fluency (fewer than 10 animals per minute) are among the earliest language changes in Alzheimer\'s disease.'},
+    abstract:{what:'Abstract reasoning',why:'Finding the deeper connection between things, and interpreting figurative language.',context:'Abstract thinking relies on the frontal lobes and is often preserved in early Alzheimer\'s but may be affected in frontotemporal dementia.'},
+    delayed:{what:'Delayed memory recall',why:'How many words you could remember after a gap of several minutes.',context:'This is the single most sensitive measure for early Alzheimer\'s disease. A significant gap between what you recalled immediately vs. after a delay is more meaningful than either score alone.'},
+    visuosp:{what:'Visuospatial perception',why:'Reading clock faces and spatial reasoning tasks.',context:'The right parietal lobe handles spatial processing. Difficulties here appear in moderate Alzheimer\'s and are a hallmark of Lewy body dementia.'},
+  };
+
   let html=`
+    <!-- Thank you message -->
+    <div class="result-thankyou">
+      <div class="result-thankyou-icon">🙏</div>
+      <p>Thank you for completing this assessment. It takes thought and courage to reflect on your cognitive health — that matters. Your results are below, explained as clearly and honestly as we can.</p>
+    </div>
+
+    <!-- Score hero -->
     <div class="result-hero">
       <div class="result-score-ring">
         <svg class="score-svg" viewBox="0 0 100 100">
@@ -1133,70 +1213,128 @@ function showResults(){
       <p>${stageDesc}</p>
     </div>
 
-    <div class="stage-card ${stageClass}">
-      <div class="stage-title">Recommendation</div>
-      <div class="stage-body">${stageRec}</div>
+    <!-- Encourage message -->
+    <div class="encourage-card">
+      <div class="encourage-icon">💛</div>
+      <p>${stageEncourage}</p>
     </div>
 
-    <h3 style="font-size:1rem;font-weight:800;padding:0 4px;margin-bottom:12px;">Domain Breakdown</h3>
-    <div class="domain-grid">
-      ${domainInfo.map(d=>{
-        const pct=Math.round(scores[d.key]/maxes[d.key]*100);
-        const col=pct>=80?'var(--green)':pct>=55?'var(--yellow)':'var(--accent)';
-        return`<div class="domain-card">
-          <div class="domain-name">${d.emoji} ${d.label}</div>
-          <div class="domain-score" style="color:${col}">${pct}%</div>
-          <div class="domain-bar"><div class="domain-fill" style="width:${pct}%;background:${col}"></div></div>
-        </div>`;
-      }).join('')}
-    </div>
-
-    <div class="card">
-      <div class="card-title">📊 What do these scores mean?</div>
-      <div class="card-body">
-        <strong>Behaviour & Self-Report</strong> — based on changes you've noticed over 2–3 years. Subjective memory complaints are an early risk indicator.<br><br>
-        <strong>Orientation</strong> — knowing the date, month, year, and season. Disorientation is a hallmark of moderate dementia.<br><br>
-        <strong>Immediate & Delayed Memory</strong> — together these measure encoding (learning) and consolidation (retaining). A large gap between immediate and delayed recall is the strongest predictor of Alzheimer's disease.<br><br>
-        <strong>Language</strong> — naming difficulties and reduced verbal fluency (fewer than 10 animals/min) are early markers in multiple dementia types.<br><br>
-        <strong>Attention</strong> — the serial 7s test is sensitive to frontal-subcortical involvement. Digit span measures working memory capacity.<br><br>
-        <strong>Abstract Reasoning</strong> — executive function and frontal lobe integrity. Preserved in early AD, often impaired in frontotemporal dementia.<br><br>
-        <strong>Visuospatial</strong> — right parietal lobe function. Clock reading difficulties appear in moderate Alzheimer's and Lewy body dementia.
+    <!-- Important context -->
+    <div class="context-card">
+      <div class="context-title">📌 Before reading further — important context</div>
+      <div class="context-body">
+        This is a <strong>screening tool, not a diagnosis</strong>. Many everyday factors can lower scores on any cognitive test: tiredness, anxiety, a poor night's sleep, pain, illness, certain medications, unfamiliarity with touchscreen devices, or simply having an off day. A single screen cannot tell the full story — only a trained clinician can do that.
+        <br><br>
+        What it <em>can</em> do is give you a useful snapshot, and point to whether it's worth a conversation with your doctor.
       </div>
     </div>
 
-    <div class="refs-card">
-      <h3>📖 Scientific References</h3>
-      <div class="ref-item">Folstein MF et al. (1975). "Mini-Mental State Examination." <em>Journal of Psychiatric Research</em>, 12(3):189–198.</div>
-      <div class="ref-item">Nasreddine ZS et al. (2005). "The Montreal Cognitive Assessment (MoCA)." <em>Journal of the American Geriatrics Society</em>, 53(4):695–699.</div>
-      <div class="ref-item">Hsieh S et al. (2013). "Validation of the Addenbrooke's Cognitive Examination III (ACE-III)." <em>Journal of Neurology, Neurosurgery & Psychiatry</em>, 84(9):964–969.</div>
-      <div class="ref-item">Galvin JE et al. (2005). "The AD8: A brief informant interview to detect dementia." <em>Neurology</em>, 65(4):559–564.</div>
-      <div class="ref-item">Sarazin M et al. (2007). "Amnesic syndrome of the medial temporal type identifies prodromal AD." <em>Neurology</em>, 69(19):1859–1867.</div>
-      <div class="ref-item">Cummings JL et al. (1994). "Neuropsychiatric Inventory (NPI)." <em>Neurology</em>, 44(12):2308–2314.</div>
-      <div class="ref-item">Lawton MP & Brody EM (1969). "Assessment of older people: IADL scale." <em>The Gerontologist</em>, 9(3):179–186.</div>
-      <div class="ref-item">Wechsler D (1945). Wechsler Memory Scale. The Psychological Corporation, New York.</div>
-      <div class="ref-item">Shulman KI (2000). "Clock-drawing: is it the ideal cognitive screening test?" <em>International Journal of Geriatric Psychiatry</em>, 15(6):548–561.</div>
-      <div class="ref-item">Livingston G et al. (2020). "Dementia prevention, intervention, and care: 2020 report of the Lancet Commission." <em>The Lancet</em>, 396(10248):413–446.</div>
+    <!-- Recommendation -->
+    <div class="stage-card ${stageClass}">
+      <div class="stage-title">What we'd suggest</div>
+      <div class="stage-body">${stageRec}</div>
+      <div class="next-steps">
+        ${stageNextSteps.map(s=>`<div class="next-step"><span class="ns-dot">→</span><span>${s}</span></div>`).join('')}
+      </div>
     </div>
 
+    <!-- Domain breakdown -->
+    <div class="card" style="margin-top:4px;">
+      <div class="card-title">📊 Your results by area</div>
+      <div class="card-body" style="margin-bottom:16px;">Each area is scored as a percentage of the maximum possible. Green means strong performance, yellow is within normal range, and red suggests this area deserves attention.</div>
+      <div class="domain-list">
+        ${domainPcts.map(d=>{
+          const col=d.pct>=80?'var(--green)':d.pct>=55?'#e6a817':'var(--accent)';
+          const label=d.pct>=80?'Strong':d.pct>=55?'Average':'Needs attention';
+          const ex=domainExplainers[d.key];
+          return`<div class="domain-row">
+            <div class="domain-row-top">
+              <span class="domain-row-name">${d.emoji} ${d.label}</span>
+              <span class="domain-row-score" style="color:${col}">${d.pct}% <span class="domain-label-pill" style="background:${col}20;color:${col}">${label}</span></span>
+            </div>
+            <div class="domain-bar"><div class="domain-fill" style="width:${d.pct}%;background:${col}"></div></div>
+            <div class="domain-explainer">${ex.context}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Personalised strengths & watchpoints -->
     <div class="card">
-      <ul class="rec-list">
-        <li><span class="rec-icon">🩺</span><span>Share these results with your GP — print this page or take a screenshot.</span></li>
-        <li><span class="rec-icon">🔁</span><span>Retest every 3–6 months to track changes over time.</span></li>
-        <li><span class="rec-icon">⚡</span><span>Play Quick Flash daily — the game most directly linked to reducing dementia risk in clinical research.</span></li>
-        <li><span class="rec-icon">🚶</span><span>30 minutes of aerobic exercise 5×/week is associated with reduced hippocampal atrophy.</span></li>
-        <li><span class="rec-icon">😴</span><span>Prioritise sleep — amyloid clearance from the brain happens primarily during deep sleep.</span></li>
-      </ul>
+      <div class="card-title">✨ Your personal highlights</div>
+      <div class="card-body" style="margin-bottom:12px;">
+        ${strongest.length>0?`<strong>Areas where you did well:</strong> ${strongest.map(d=>`${d.emoji} ${d.label} (${d.pct}%)`).join(' · ')}<br><br>`:''}
+        ${weakest.length>0?`<strong>Areas worth watching:</strong> ${weakest.map(d=>`${d.emoji} ${d.label} (${d.pct}%)`).join(' · ')}<br><br>`:' All areas were within normal range.<br><br>'}
+        ${scores.delayed<scores.memImm*0.6&&scores.memImm>0?`<span style="color:#e6a817;font-weight:700;">⚠️ Notable: </span>Your delayed recall was noticeably lower than your immediate recall. This gap — remembering less after a delay — is the pattern most closely associated with early Alzheimer's in research. It is worth mentioning specifically to your GP.<br><br>`:''}
+        ${scores.lang<maxes.lang*0.5?`<span style="color:#e6a817;font-weight:700;">⚠️ Notable: </span>Your language score suggests some difficulty with word-finding or verbal fluency. This can be caused by many things including anxiety and hearing loss — both worth discussing with a doctor.<br><br>`:''}
+      </div>
     </div>
 
-    <div class="disclaimer" style="margin-top:8px;">
-      <strong>⚠️ Reminder</strong>
-      This screening tool is not a clinical diagnosis. Results are indicative only and may be affected by tiredness, anxiety, illness, or unfamiliarity with digital interfaces. Always consult a qualified medical professional.
+    <!-- What each domain means -->
+    <div class="card">
+      <div class="card-title">🔬 What each area measures</div>
+      <div class="card-body">
+        ${domainInfo.map(d=>{
+          const ex=domainExplainers[d.key];
+          return`<div style="margin-bottom:14px;"><strong>${d.emoji} ${ex.what}</strong><br><span style="color:var(--muted);font-size:0.85rem;">${ex.why}</span></div>`;
+        }).join('')}
+      </div>
     </div>
 
-    <a href="index.html" class="big-btn" style="text-decoration:none;display:block;text-align:center;margin-top:16px;">← Back to Brain Spark</a>
+    <!-- Support resources -->
+    <div class="support-card">
+      <div class="support-title">🤝 Support &amp; Resources</div>
+      <div class="support-grid">
+        <div class="support-item">
+          <div class="support-org">Alzheimer's Society (UK)</div>
+          <div class="support-detail">Helpline: <strong>0333 150 3456</strong><br>Free, confidential, open 9am–8pm weekdays</div>
+        </div>
+        <div class="support-item">
+          <div class="support-org">Dementia UK</div>
+          <div class="support-detail">Admiral Nurse Dementia Helpline:<br><strong>0800 888 6678</strong> (free)</div>
+        </div>
+        <div class="support-item">
+          <div class="support-org">NHS Memory Services</div>
+          <div class="support-detail">Ask your GP for a referral to your local NHS Memory Assessment Service — it's free and they are kind.</div>
+        </div>
+        <div class="support-item">
+          <div class="support-org">Age UK</div>
+          <div class="support-detail">Advice line: <strong>0800 678 1602</strong><br>Free information and emotional support</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scientific references -->
+    <div class="refs-card">
+      <h3>📖 Scientific Basis of This Assessment</h3>
+      <div class="ref-item">Folstein MF et al. (1975). Mini-Mental State Examination. <em>Journal of Psychiatric Research</em>, 12(3):189–198.</div>
+      <div class="ref-item">Nasreddine ZS et al. (2005). The Montreal Cognitive Assessment (MoCA). <em>Journal of the American Geriatrics Society</em>, 53(4):695–699.</div>
+      <div class="ref-item">Hsieh S et al. (2013). Validation of the ACE-III. <em>Journal of Neurology, Neurosurgery &amp; Psychiatry</em>, 84(9):964–969.</div>
+      <div class="ref-item">Galvin JE et al. (2005). The AD8 informant interview. <em>Neurology</em>, 65(4):559–564.</div>
+      <div class="ref-item">Sarazin M et al. (2007). Delayed recall as the strongest predictor of prodromal Alzheimer's. <em>Neurology</em>, 69(19):1859–1867.</div>
+      <div class="ref-item">Cummings JL et al. (1994). Neuropsychiatric Inventory. <em>Neurology</em>, 44(12):2308–2314.</div>
+      <div class="ref-item">Livingston G et al. (2020). Dementia prevention, intervention and care: Lancet Commission report. <em>The Lancet</em>, 396(10248):413–446.</div>
+      <div class="ref-item">Wechsler D (1945). Wechsler Memory Scale. The Psychological Corporation.</div>
+      <div class="ref-item">Shulman KI (2000). Clock-drawing as cognitive screening. <em>International Journal of Geriatric Psychiatry</em>, 15(6):548–561.</div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer" style="margin-top:4px;">
+      <strong>⚠️ Medical Disclaimer</strong>
+      This tool is for informational purposes only and does not constitute a medical diagnosis. Results may be affected by many factors unrelated to dementia. Always consult a qualified medical professional before drawing conclusions about your health.
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:16px;flex-direction:column;">
+      <button class="big-btn green" onclick="window.print()">🖨️ Print / Save Results</button>
+      <a href="index.html" class="big-btn orange" style="text-decoration:none;display:block;text-align:center;">← Back to Brain Spark</a>
+    </div>
   `;
 
   document.getElementById('resultsContent').innerHTML=html;
+  // wrap card-level elements that don't have their own padding
+  document.querySelectorAll('#resultsContent > .card, #resultsContent > .refs-card, #resultsContent > .support-card, #resultsContent > .stage-card, #resultsContent > .disclaimer, #resultsContent > div[style*="flex"]').forEach(el=>{
+    if(!el.style.marginLeft) el.style.cssText+='margin-left:20px;margin-right:20px;';
+  });
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('secResults').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});

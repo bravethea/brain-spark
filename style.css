@@ -161,19 +161,72 @@ body {
 
 /* TEST BANNER */
 .test-banner {
-  display: flex; align-items: center; justify-content: space-between;
-  background: linear-gradient(135deg, #2d2b4e, #4a4580);
-  border-radius: var(--radius); padding: 18px 20px;
-  text-decoration: none; color: white; margin-bottom: 20px;
-  box-shadow: 0 4px 20px rgba(45,43,78,0.3);
-  transition: transform 0.15s, box-shadow 0.15s;
+  display: block;
+  background: white;
+  border-radius: var(--radius);
+  border: 2px solid #d4ceff;
+  text-decoration: none;
+  color: var(--text);
+  margin-bottom: 22px;
+  box-shadow: 0 6px 28px rgba(108,99,255,0.13);
+  overflow: hidden;
+  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
 }
-.test-banner:active { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(45,43,78,0.4); }
-.test-banner-left { display: flex; align-items: center; gap: 14px; }
-.test-banner-icon { font-size: 2.2rem; }
-.test-banner-title { font-size: 1rem; font-weight: 800; margin-bottom: 3px; }
-.test-banner-sub { font-size: 0.8rem; opacity: 0.8; }
-.test-banner-arrow { font-size: 1.4rem; opacity: 0.7; }
+.test-banner:hover, .test-banner:active {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(108,99,255,0.2);
+  border-color: var(--primary);
+}
+.test-banner-top {
+  background: linear-gradient(90deg, var(--primary), #9b8fff);
+  padding: 8px 18px;
+}
+.test-banner-badge {
+  font-size: 0.72rem; font-weight: 800; color: white;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px;
+}
+.test-banner-body {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 18px 18px 14px;
+}
+.test-banner-icon-wrap {
+  font-size: 2.8rem; flex-shrink: 0; line-height: 1;
+  background: var(--primary-light); border-radius: 16px;
+  width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+}
+.test-banner-text { flex: 1; }
+.test-banner-title {
+  font-size: 1.1rem; font-weight: 900; color: var(--text);
+  margin-bottom: 5px; line-height: 1.2;
+}
+.test-banner-sub {
+  font-size: 0.83rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px;
+}
+.test-banner-tools {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.test-banner-tools span {
+  font-size: 0.7rem; font-weight: 800; background: var(--primary-light);
+  color: var(--primary); padding: 3px 9px; border-radius: 50px;
+  letter-spacing: 0.3px;
+}
+.test-banner-footer {
+  border-top: 1px solid #f0eeff;
+  padding: 12px 18px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.test-banner-domains {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.test-banner-domains span {
+  font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
+}
+.test-banner-cta {
+  font-size: 0.85rem; font-weight: 800; color: var(--primary);
+  white-space: nowrap; flex-shrink: 0;
+  background: var(--primary-light); padding: 7px 14px; border-radius: 50px;
+}
 
 /* ===== SHARED GAME STYLES ===== */
 .game-page { max-width: 680px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px; }
