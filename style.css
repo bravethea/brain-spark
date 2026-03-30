@@ -159,74 +159,52 @@ body {
 /* FOOTER */
 .footer { text-align: center; padding: 24px 20px 10px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
 
-/* TEST BANNER */
-.test-banner {
-  display: block;
+/* ASSESSMENT SECTION */
+.assess-section {
+  padding: 6px 20px 0;
+}
+.assess-label {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px;
+}
+.assess-card {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px;
   background: white;
-  border-radius: var(--radius);
-  border: 2px solid #d4ceff;
+  border-radius: 18px;
+  border: 1.5px solid #e0dcff;
+  padding: 16px 18px;
   text-decoration: none;
   color: var(--text);
-  margin-bottom: 22px;
-  box-shadow: 0 6px 28px rgba(108,99,255,0.13);
-  overflow: hidden;
-  transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  box-shadow: 0 2px 16px rgba(108,99,255,0.08);
+  transition: box-shadow 0.18s, border-color 0.18s, transform 0.18s;
+  margin-bottom: 8px;
 }
-.test-banner:hover, .test-banner:active {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(108,99,255,0.2);
+.assess-card:active {
+  transform: scale(0.985);
+  box-shadow: 0 4px 24px rgba(108,99,255,0.16);
   border-color: var(--primary);
 }
-.test-banner-top {
-  background: linear-gradient(90deg, var(--primary), #9b8fff);
-  padding: 8px 18px;
+.assess-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+.assess-icon {
+  font-size: 2rem; width: 52px; height: 52px; flex-shrink: 0;
+  background: #f0eeff; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
 }
-.test-banner-badge {
-  font-size: 0.72rem; font-weight: 800; color: white;
-  letter-spacing: 0.5px; text-transform: uppercase;
-  display: flex; align-items: center; gap: 6px;
+.assess-text { flex: 1; min-width: 0; }
+.assess-title { font-size: 1rem; font-weight: 900; color: var(--text); margin-bottom: 2px; }
+.assess-desc { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
+.assess-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.assess-chip {
+  font-size: 0.68rem; font-weight: 800; background: #f0eeff;
+  color: var(--primary); padding: 2px 8px; border-radius: 50px;
+  letter-spacing: 0.2px;
 }
-.test-banner-body {
-  display: flex; align-items: flex-start; gap: 16px;
-  padding: 18px 18px 14px;
-}
-.test-banner-icon-wrap {
-  font-size: 2.8rem; flex-shrink: 0; line-height: 1;
-  background: var(--primary-light); border-radius: 16px;
-  width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
-}
-.test-banner-text { flex: 1; }
-.test-banner-title {
-  font-size: 1.1rem; font-weight: 900; color: var(--text);
-  margin-bottom: 5px; line-height: 1.2;
-}
-.test-banner-sub {
-  font-size: 0.83rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px;
-}
-.test-banner-tools {
-  display: flex; flex-wrap: wrap; gap: 6px;
-}
-.test-banner-tools span {
-  font-size: 0.7rem; font-weight: 800; background: var(--primary-light);
-  color: var(--primary); padding: 3px 9px; border-radius: 50px;
-  letter-spacing: 0.3px;
-}
-.test-banner-footer {
-  border-top: 1px solid #f0eeff;
-  padding: 12px 18px;
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-}
-.test-banner-domains {
-  display: flex; flex-wrap: wrap; gap: 6px;
-}
-.test-banner-domains span {
+.assess-duration {
   font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
+  padding-left: 4px;
 }
-.test-banner-cta {
-  font-size: 0.85rem; font-weight: 800; color: var(--primary);
-  white-space: nowrap; flex-shrink: 0;
-  background: var(--primary-light); padding: 7px 14px; border-radius: 50px;
-}
+.assess-arrow { flex-shrink: 0; }
 
 /* ===== SHARED GAME STYLES ===== */
 .game-page { max-width: 680px; margin: 0 auto; min-height: 100vh; padding-bottom: 40px; }
