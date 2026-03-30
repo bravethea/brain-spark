@@ -7,274 +7,476 @@
   <link rel="stylesheet" href="../style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    /* 4x4 grid */
     .lights-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      max-width: 320px;
-      margin: 0 auto 28px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      max-width: 360px;
+      margin: 0 auto 20px;
     }
     .light-btn {
       aspect-ratio: 1;
-      border-radius: 20px;
+      border-radius: 18px;
       border: none;
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: transform 0.12s;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.14);
+      transition: transform 0.1s;
     }
-    .light-btn::after {
+    .light-btn::before {
       content: '';
       position: absolute; inset: 0;
-      background: rgba(255,255,255,0.5);
-      opacity: 0;
+      background: rgba(0,0,0,0.35);
       border-radius: inherit;
       transition: opacity 0.15s;
     }
-    .light-btn:active { transform: scale(0.93); }
-    .light-btn.lit::after { opacity: 1; }
+    .light-btn.lit::before  { opacity: 0; }
+    .light-btn:active { transform: scale(0.91); }
+
     .light-btn.pulse {
-      animation: lightPulse 0.45s ease;
+      animation: lightPulse 0.38s ease;
     }
     @keyframes lightPulse {
-      0% { transform: scale(1); filter: brightness(1); }
-      40% { transform: scale(1.07); filter: brightness(1.8); }
-      100% { transform: scale(1); filter: brightness(1); }
+      0%   { transform: scale(1);    filter: brightness(1); }
+      45%  { transform: scale(1.09); filter: brightness(2.2); }
+      100% { transform: scale(1);    filter: brightness(1); }
     }
-    .light-btn.correct-flash { animation: correctFlash 0.5s; }
-    @keyframes correctFlash { 0%,100%{filter:brightness(1)} 50%{filter:brightness(2.2) saturate(1.5)} }
-    .light-btn.wrong-flash { animation: wrongFlash 0.5s; }
-    @keyframes wrongFlash { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)} 60%{transform:translateX(10px)} }
+    .light-btn.correct-flash { animation: correctPulse 0.4s; }
+    @keyframes correctPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(2.5) saturate(1.8)} }
+    .light-btn.wrong-shake   { animation: wrongShake 0.45s; }
+    @keyframes wrongShake    { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-10px)} 40%,80%{transform:translateX(10px)} }
 
-    /* 9 distinct colour pairs (dim/lit) */
-    .l0 { background: #e74c3c; } /* red */
-    .l1 { background: #3498db; } /* blue */
-    .l2 { background: #2ecc71; } /* green */
-    .l3 { background: #f1c40f; } /* yellow */
-    .l4 { background: #9b59b6; } /* purple */
-    .l5 { background: #e67e22; } /* orange */
-    .l6 { background: #1abc9c; } /* teal */
-    .l7 { background: #e91e8c; } /* pink */
-    .l8 { background: #34495e; } /* dark */
+    /* Ripple on tap */
+    .ripple {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+      transform: scale(0);
+      animation: rippleAnim 0.5s linear;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
 
+    /* 16 distinct colours */
+    .l0  { background: #e74c3c; }
+    .l1  { background: #e67e22; }
+    .l2  { background: #f1c40f; }
+    .l3  { background: #2ecc71; }
+    .l4  { background: #1abc9c; }
+    .l5  { background: #3498db; }
+    .l6  { background: #9b59b6; }
+    .l7  { background: #e91e8c; }
+    .l8  { background: #ff5722; }
+    .l9  { background: #00bcd4; }
+    .l10 { background: #8bc34a; }
+    .l11 { background: #673ab7; }
+    .l12 { background: #795548; }
+    .l13 { background: #607d8b; }
+    .l14 { background: #c0392b; }
+    .l15 { background: #2980b9; }
+
+    /* Status */
     .status-msg {
-      text-align: center;
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #2d2b4e;
-      margin-bottom: 16px;
-      min-height: 1.5em;
+      text-align: center; font-size: 1.05rem; font-weight: 800;
+      color: #2d2b4e; margin-bottom: 12px; min-height: 1.5em;
     }
-    .round-indicator {
-      display: flex; justify-content: center; gap: 6px; margin-bottom: 18px;
-      flex-wrap: wrap;
+
+    /* Mode banner */
+    .mode-pill {
+      display: inline-block; padding: 5px 16px; border-radius: 50px;
+      font-size: 0.8rem; font-weight: 800; margin-bottom: 12px;
     }
-    .ri-dot {
-      width: 14px; height: 14px; border-radius: 50%;
+    .m-normal  { background: #ede9ff; color: #6c63ff; }
+    .m-ghost   { background: #1a1a2e; color: #e0d7ff; }
+    .m-double  { background: #fff3cd; color: #7a5200; }
+    .m-reverse { background: #fde0e0; color: #8b1a1a; }
+    .m-dark    { background: #222; color: #aaa; }
+
+    .mode-area { text-align: center; }
+
+    /* Progress bar */
+    .round-track {
+      display: flex; gap: 4px; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .rt-seg {
+      height: 8px; width: 18px; border-radius: 4px;
       background: #e0dcff; transition: background 0.3s;
     }
-    .ri-dot.active { background: #6c63ff; transform: scale(1.2); }
-    .ri-dot.done { background: #43c59e; }
+    .rt-seg.done   { background: #43c59e; }
+    .rt-seg.active { background: #6c63ff; }
+    .rt-seg.fail   { background: #ff6584; }
 
-    .step-progress {
-      text-align: center; font-size: 0.85rem; color: #7b78a8;
-      font-weight: 600; margin-bottom: 12px;
+    /* Step indicator */
+    .step-info {
+      text-align: center; font-size: 0.82rem;
+      color: #7b78a8; font-weight: 700; margin-bottom: 10px;
     }
+
+    /* Mode announce */
+    .mode-announce {
+      position:fixed; inset:0; background:rgba(45,43,78,0.75);
+      z-index:300; display:none; align-items:center; justify-content:center;
+    }
+    .mode-announce.show { display:flex; }
+    .mode-card {
+      background:white; border-radius:24px; padding:32px 28px;
+      text-align:center; max-width:300px; width:88%;
+      animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn { from{transform:scale(0.6);opacity:0} to{transform:scale(1);opacity:1} }
+    .mode-card .m-icon { font-size:3.5rem; margin-bottom:10px; }
+    .mode-card h3 { font-size:1.4rem; font-weight:900; margin-bottom:8px; }
+    .mode-card p  { color:#7b78a8; font-size:0.95rem; margin-bottom:20px; }
   </style>
 </head>
 <body>
-  <div class="game-page">
-    <div class="game-header">
-      <a href="../index.html" class="back-btn">←</a>
-      <span class="game-title">🌈 Pattern Lights</span>
-      <span class="game-score-header" id="headerScore">Round 1</span>
+<div class="game-page">
+  <div class="game-header">
+    <a href="../index.html" class="back-btn">←</a>
+    <span class="game-title">🌈 Pattern Lights</span>
+    <span class="game-score-header" id="headerScore">Round 1</span>
+  </div>
+
+  <div class="game-body">
+    <div id="introScreen">
+      <div class="instruction-card">
+        <div style="font-size:3rem;margin-bottom:10px;">🌈</div>
+        <strong>How to play:</strong><br><br>
+        Watch the 4×4 grid of coloured lights flash in a sequence.<br>
+        Then tap them in the same order!<br><br>
+        New challenges as you progress:<br>
+        👻 <strong>Ghost</strong> — lights flash for only 200ms<br>
+        ✌️ <strong>Double</strong> — two lights flash at once<br>
+        🔀 <strong>Reverse</strong> — tap in reverse order<br><br>
+        <em style="font-size:0.85rem;color:#7b78a8;">Trains visual memory, attention, and sequence processing.</em>
+      </div>
+      <div class="score-bar">
+        <div class="score-item"><div class="score-num" id="bestRound">1</div><div class="score-label">Best Round</div></div>
+        <div class="score-item"><div class="score-num" id="totalPL">0</div><div class="score-label">Sessions</div></div>
+      </div>
+      <button class="big-btn" onclick="startGame()">Start Playing 🌈</button>
     </div>
 
-    <div class="game-body">
-      <div id="introScreen">
-        <div class="instruction-card">
-          <div style="font-size:3rem;margin-bottom:10px;">🌈</div>
-          <strong>How to play:</strong><br><br>
-          Watch the coloured lights flash in a sequence.<br>
-          Then tap them in the same order!<br>
-          Each round adds one more light to remember.<br><br>
-          <em style="font-size:0.85rem;color:#7b78a8;">Trains visual memory, attention, and pattern recognition.</em>
-        </div>
-        <div class="score-bar">
-          <div class="score-item"><div class="score-num" id="bestRound">1</div><div class="score-label">Best Round</div></div>
-          <div class="score-item"><div class="score-num" id="totalPL">0</div><div class="score-label">Sessions</div></div>
-        </div>
-        <button class="big-btn" onclick="startGame()">Start Playing 🌈</button>
+    <div id="gameScreen" style="display:none;">
+      <div class="score-bar">
+        <div class="score-item"><div class="score-num" id="roundDisplay">1</div><div class="score-label">Round</div></div>
+        <div class="score-item"><div class="score-num" id="stepsDisplay">1</div><div class="score-label">Sequence</div></div>
+        <div class="score-item"><div class="score-num" id="livesPL">❤️❤️❤️</div><div class="score-label">Lives</div></div>
       </div>
 
-      <div id="gameScreen" style="display:none;">
-        <div class="score-bar">
-          <div class="score-item"><div class="score-num" id="roundDisplay">1</div><div class="score-label">Round</div></div>
-          <div class="score-item"><div class="score-num" id="stepsDisplay">1</div><div class="score-label">Sequence</div></div>
-          <div class="score-item"><div class="score-num" id="livesPL">❤️❤️❤️</div><div class="score-label">Lives</div></div>
-        </div>
+      <div class="round-track" id="roundTrack"></div>
 
-        <div class="status-msg" id="statusMsg">Watch the lights…</div>
-        <div class="step-progress" id="stepProgress"></div>
-        <div class="round-indicator" id="roundIndicator"></div>
-
-        <div class="lights-grid" id="lightsGrid"></div>
+      <div class="mode-area">
+        <span class="mode-pill m-normal" id="modePill">⚡ Normal Mode</span>
       </div>
-    </div>
+      <div class="status-msg" id="statusMsg">Watch the lights…</div>
+      <div class="step-info" id="stepInfo"></div>
 
-    <div class="result-overlay" id="resultOverlay">
-      <div class="result-box">
-        <div class="result-emoji" id="resultEmoji">🎉</div>
-        <h2 id="resultTitle">Pattern Master!</h2>
-        <p id="resultMsg"></p>
-        <div class="result-actions">
-          <button class="big-btn" onclick="startGame()">Play Again</button>
-          <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
-        </div>
-      </div>
+      <div class="lights-grid" id="lightsGrid"></div>
     </div>
   </div>
 
-  <script>
-    let pattern = [], userStep = 0, round = 0, lives = 3, canInput = false;
-    const MAX_ROUNDS = 20;
+  <!-- Mode announce -->
+  <div class="mode-announce" id="modeAnnounce">
+    <div class="mode-card">
+      <div class="m-icon" id="modeAnIcon">👻</div>
+      <h3 id="modeAnTitle">Ghost Mode!</h3>
+      <p id="modeAnDesc">Lights flash for only 200ms — stay sharp!</p>
+      <button class="big-btn" onclick="dismissMode()">Ready!</button>
+    </div>
+  </div>
 
-    function getStats() { return JSON.parse(localStorage.getItem('pl_stats') || '{"best":1,"sessions":0}'); }
-    function saveStats() {
-      const st = getStats();
-      if (round > st.best) st.best = round;
-      st.sessions = (st.sessions||0)+1;
-      localStorage.setItem('pl_stats', JSON.stringify(st));
-      const today = new Date().toDateString();
-      let g = JSON.parse(localStorage.getItem('brainSpark')||'{}');
-      if (g.lastDate===today){g.gamesPlayed=(g.gamesPlayed||0)+1;localStorage.setItem('brainSpark',JSON.stringify(g));}
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-box">
+      <div class="result-emoji" id="resultEmoji">🎉</div>
+      <h2 id="resultTitle">Pattern Master!</h2>
+      <p id="resultMsg"></p>
+      <div class="result-actions">
+        <button class="big-btn" onclick="startGame()">Play Again</button>
+        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NUM_LIGHTS = 16;
+const MAX_ROUNDS = 25;
+
+let pattern=[], userStep=0, round=0, lives=3, canInput=false;
+let mode='normal', modeCallback=null;
+let roundSegStates=[];
+
+// Mode schedules: at which rounds do special modes kick in
+function getMode(r){
+  if(r<=3)return'normal';
+  if(r===6)return'ghost';
+  if(r===9)return'double';
+  if(r===12)return'reverse';
+  // From round 14+: mix
+  const mix=['normal','normal','ghost','double','reverse','normal','ghost'];
+  return mix[(r-13)%mix.length];
+}
+
+function flashDuration(r,m){
+  const base=Math.max(250,750-r*25);
+  if(m==='ghost')return Math.max(150,base*0.3);
+  return base;
+}
+function interFlashGap(r){ return Math.max(80,250-r*8); }
+
+function getStats(){return JSON.parse(localStorage.getItem('pl2_stats')||'{"best":1,"sessions":0}');}
+function saveStats(){
+  const st=getStats();
+  if(round>st.best)st.best=round;
+  st.sessions=(st.sessions||0)+1;
+  localStorage.setItem('pl2_stats',JSON.stringify(st));
+  const today=new Date().toDateString();
+  let g=JSON.parse(localStorage.getItem('brainSpark')||'{}');
+  if(g.lastDate===today){g.gamesPlayed=(g.gamesPlayed||0)+1;localStorage.setItem('brainSpark',JSON.stringify(g));}
+}
+function init(){
+  const st=getStats();
+  document.getElementById('bestRound').textContent=st.best;
+  document.getElementById('totalPL').textContent=st.sessions;
+}
+
+function buildGrid(){
+  const grid=document.getElementById('lightsGrid');
+  grid.innerHTML='';
+  for(let i=0;i<NUM_LIGHTS;i++){
+    const btn=document.createElement('button');
+    btn.className=`light-btn l${i}`;
+    btn.id='light_'+i;
+    btn.addEventListener('click',e=>userTap(i,e));
+    grid.appendChild(btn);
+  }
+}
+
+function startGame(){
+  pattern=[];round=0;lives=3;canInput=false;roundSegStates=[];
+  document.getElementById('introScreen').style.display='none';
+  document.getElementById('resultOverlay').classList.remove('show');
+  document.getElementById('gameScreen').style.display='';
+  buildGrid();
+  buildRoundTrack();
+  nextRound();
+}
+
+function buildRoundTrack(){
+  const t=document.getElementById('roundTrack');
+  t.innerHTML='';
+  const show=Math.min(MAX_ROUNDS,25);
+  for(let i=0;i<show;i++){
+    const s=document.createElement('div');
+    s.className='rt-seg';
+    s.id='seg_'+i;
+    t.appendChild(s);
+  }
+}
+
+function updateRoundTrack(){
+  for(let i=0;i<MAX_ROUNDS;i++){
+    const s=document.getElementById('seg_'+i);
+    if(!s)continue;
+    const st=roundSegStates[i]||'';
+    s.className='rt-seg'+(st==='done'?' done':st==='fail'?' fail':i===round-1?' active':'');
+  }
+}
+
+function pickNewLight(){
+  // Avoid immediate repeat
+  let l;
+  do { l=Math.floor(Math.random()*NUM_LIGHTS); }
+  while(pattern.length>0&&l===pattern[pattern.length-1]);
+  return l;
+}
+
+function nextRound(){
+  if(round>=MAX_ROUNDS||lives<=0){saveStats();endGame();return;}
+  round++;
+  userStep=0;
+  canInput=false;
+
+  const newMode=getMode(round);
+  const modeChanged=newMode!==mode||[6,9,12].includes(round);
+  mode=newMode;
+
+  // Double: add 2 new lights; else add 1
+  if(mode==='double'){
+    pattern.push(pickNewLight(),pickNewLight());
+  } else {
+    pattern.push(pickNewLight());
+  }
+
+  updateUI();
+  updateModeUI();
+  updateRoundTrack();
+
+  if(modeChanged&&[6,9,12].includes(round)){
+    announceModeAndThen(()=>playSequence());
+  } else {
+    setTimeout(playSequence,600);
+  }
+}
+
+const MODE_INFO={
+  ghost: {icon:'👻',title:'Ghost Mode!',desc:'Lights now flash for only 200ms. Blink and you\'ll miss it!',pill:'m-ghost',label:'👻 Ghost Mode'},
+  double:{icon:'✌️',title:'Double Mode!',desc:'Two lights flash simultaneously. Remember BOTH!',pill:'m-double',label:'✌️ Double Mode'},
+  reverse:{icon:'🔀',title:'Reverse Mode!',desc:'Tap the sequence BACKWARDS — from last to first.',pill:'m-reverse',label:'🔀 Reverse Mode'},
+};
+
+function updateModeUI(){
+  const pill=document.getElementById('modePill');
+  const info=MODE_INFO[mode];
+  if(info){
+    pill.className='mode-pill '+info.pill;
+    pill.textContent=info.label;
+  } else {
+    pill.className='mode-pill m-normal';
+    pill.textContent='⚡ Normal Mode';
+  }
+}
+
+function announceModeAndThen(cb){
+  const info=MODE_INFO[mode];
+  if(!info){cb();return;}
+  document.getElementById('modeAnIcon').textContent=info.icon;
+  document.getElementById('modeAnTitle').textContent=info.title;
+  document.getElementById('modeAnDesc').textContent=info.desc;
+  document.getElementById('modeAnnounce').classList.add('show');
+  modeCallback=cb;
+}
+function dismissMode(){
+  document.getElementById('modeAnnounce').classList.remove('show');
+  if(modeCallback){modeCallback();modeCallback=null;}
+}
+
+function flashLight(idx,dur,cb){
+  const btn=document.getElementById('light_'+idx);
+  if(!btn)return;
+  btn.classList.add('pulse','lit');
+  setTimeout(()=>{btn.classList.remove('pulse','lit');if(cb)setTimeout(cb,interFlashGap(round));},dur);
+}
+
+function playSequence(){
+  canInput=false;
+  setStatus('👁️ Watch carefully…');
+  document.getElementById('stepInfo').textContent='';
+
+  const dur=flashDuration(round,mode);
+  let i=0;
+
+  if(mode==='double'){
+    // Play in pairs
+    const pairs=[];
+    for(let p=0;p<pattern.length;p+=2){
+      if(p+1<pattern.length)pairs.push([pattern[p],pattern[p+1]]);
+      else pairs.push([pattern[p]]);
     }
-
-    function init() {
-      const st = getStats();
-      document.getElementById('bestRound').textContent = st.best;
-      document.getElementById('totalPL').textContent = st.sessions;
-    }
-
-    function buildGrid() {
-      const grid = document.getElementById('lightsGrid');
-      grid.innerHTML = '';
-      for (let i = 0; i < 9; i++) {
-        const btn = document.createElement('button');
-        btn.className = `light-btn l${i}`;
-        btn.id = 'light_' + i;
-        btn.addEventListener('click', () => userTap(i));
-        grid.appendChild(btn);
-      }
-    }
-
-    function startGame() {
-      pattern = []; round = 0; lives = 3; canInput = false;
-      document.getElementById('introScreen').style.display = 'none';
-      document.getElementById('resultOverlay').classList.remove('show');
-      document.getElementById('gameScreen').style.display = '';
-      buildGrid();
-      nextRound();
-    }
-
-    function nextRound() {
-      if (round >= MAX_ROUNDS) { saveStats(); endGame(); return; }
-      round++;
-      userStep = 0;
-      canInput = false;
-      pattern.push(Math.floor(Math.random() * 9));
-      updateUI();
-      buildRoundIndicator();
-      setStatus('👁️ Watch carefully…');
-      document.getElementById('stepProgress').textContent = '';
-      setTimeout(playSequence, 700);
-    }
-
-    function buildRoundIndicator() {
-      const ri = document.getElementById('roundIndicator');
-      ri.innerHTML = '';
-      const show = Math.min(round, 12);
-      for (let i = 0; i < show; i++) {
-        const d = document.createElement('div');
-        d.className = 'ri-dot' + (i < round - 1 ? ' done' : ' active');
-        ri.appendChild(d);
-      }
-    }
-
-    function flashLight(idx, duration, cb) {
-      const btn = document.getElementById('light_' + idx);
-      btn.classList.add('pulse');
-      setTimeout(() => { btn.classList.remove('pulse'); if (cb) setTimeout(cb, 100); }, duration);
-    }
-
-    function playSequence() {
-      canInput = false;
-      let i = 0;
-      const speed = Math.max(300, 700 - round * 20);
-
-      function next() {
-        if (i < pattern.length) {
-          flashLight(pattern[i], speed, () => { i++; setTimeout(next, 150); });
-        } else {
-          canInput = true;
-          setStatus('🎯 Your turn!');
-          updateStepProgress();
-        }
-      }
-      next();
-    }
-
-    function userTap(idx) {
-      if (!canInput) return;
-      flashLight(idx, 300, null);
-      if (idx === pattern[userStep]) {
-        userStep++;
-        updateStepProgress();
-        if (userStep === pattern.length) {
-          canInput = false;
-          setStatus('✅ Correct! Well done!');
-          setTimeout(nextRound, 800);
-        }
+    function showPair(){
+      if(i<pairs.length){
+        const pair=pairs[i];
+        pair.forEach(idx=>flashLight(idx,dur,null));
+        setTimeout(()=>{i++;setTimeout(showPair,interFlashGap(round));},dur+50);
       } else {
-        canInput = false;
-        document.getElementById('light_' + idx).classList.add('wrong-flash');
-        lives--;
-        updateUI();
-        setStatus('❌ Oops! Try again…');
-        setTimeout(() => {
-          if (lives <= 0) { saveStats(); endGame(); }
-          else { userStep = 0; setTimeout(playSequence, 800); }
-        }, 900);
+        afterSequence();
       }
     }
+    setTimeout(showPair,400);
+    return;
+  }
 
-    function updateStepProgress() {
-      if (canInput) {
-        document.getElementById('stepProgress').textContent = `${userStep} / ${pattern.length} tapped`;
-      }
+  function showNext(){
+    if(i<pattern.length){
+      flashLight(pattern[i],dur,()=>{i++;showNext();});
+    } else {
+      afterSequence();
     }
+  }
+  setTimeout(showNext,400);
+}
 
-    function updateUI() {
-      document.getElementById('roundDisplay').textContent = round;
-      document.getElementById('stepsDisplay').textContent = pattern.length;
-      document.getElementById('livesPL').textContent = '❤️'.repeat(Math.max(0, lives));
-      document.getElementById('headerScore').textContent = 'Round ' + round;
+function afterSequence(){
+  canInput=true;
+  const hint=mode==='reverse'?'🔀 Tap BACKWARDS!':'🎯 Your turn!';
+  setStatus(hint);
+  updateStepInfo();
+}
+
+function userTap(idx,evt){
+  if(!canInput)return;
+  addRipple(idx,evt);
+  flashLight(idx,200,null);
+
+  const expectedPattern=mode==='reverse'?[...pattern].reverse():pattern;
+  const expected=expectedPattern[userStep];
+
+  if(idx===expected){
+    document.getElementById('light_'+idx).classList.add('correct-flash');
+    userStep++;
+    updateStepInfo();
+    if(userStep===pattern.length){
+      canInput=false;
+      roundSegStates[round-1]='done';
+      setStatus('✅ Perfect!');
+      setTimeout(nextRound,700);
     }
+  } else {
+    canInput=false;
+    document.getElementById('light_'+idx).classList.add('wrong-shake');
+    lives--;
+    roundSegStates[round-1]='fail';
+    setStatus('❌ Wrong! The next was light #'+(expected+1));
+    updateUI();
+    updateRoundTrack();
+    setTimeout(()=>{
+      if(lives<=0){saveStats();endGame();}
+      else{userStep=0;setTimeout(playSequence,1000);}
+    },1000);
+  }
+}
 
-    function setStatus(msg) {
-      document.getElementById('statusMsg').textContent = msg;
-    }
+function addRipple(idx,evt){
+  if(!evt)return;
+  const btn=document.getElementById('light_'+idx);
+  const rect=btn.getBoundingClientRect();
+  const r=document.createElement('span');
+  const size=Math.max(rect.width,rect.height);
+  const x=(evt.clientX-rect.left)-size/2;
+  const y=(evt.clientY-rect.top)-size/2;
+  r.className='ripple';
+  r.style.cssText=`width:${size}px;height:${size}px;left:${x}px;top:${y}px`;
+  btn.appendChild(r);
+  setTimeout(()=>r.remove(),500);
+}
 
-    function endGame() {
-      const st = getStats();
-      document.getElementById('resultEmoji').textContent = round >= 12 ? '🧠' : round >= 7 ? '🌟' : '💪';
-      document.getElementById('resultTitle').textContent = round >= 12 ? 'Pattern Master!' : round >= 7 ? 'Excellent!' : 'Good effort!';
-      document.getElementById('resultMsg').textContent = `You completed ${round - 1} rounds, memorising sequences of up to ${pattern.length} lights!\nBest ever: Round ${st.best}.`;
-      document.getElementById('resultOverlay').classList.add('show');
-    }
+function updateStepInfo(){
+  if(canInput){
+    document.getElementById('stepInfo').textContent=
+      userStep+' / '+pattern.length+' tapped'+(mode==='reverse'?' (reverse)':'');
+  }
+}
 
-    init();
-  </script>
+function updateUI(){
+  document.getElementById('roundDisplay').textContent=round;
+  document.getElementById('stepsDisplay').textContent=pattern.length;
+  document.getElementById('livesPL').textContent='❤️'.repeat(Math.max(0,lives));
+  document.getElementById('headerScore').textContent='Round '+round;
+}
+function setStatus(msg){document.getElementById('statusMsg').textContent=msg;}
+
+function endGame(){
+  const st=getStats();
+  document.getElementById('resultEmoji').textContent=round>=18?'🧠':round>=10?'🌟':'💪';
+  document.getElementById('resultTitle').textContent=round>=18?'Pattern Legend!':round>=10?'Excellent!':'Good effort!';
+  document.getElementById('resultMsg').textContent=`Completed ${round-1} rounds · sequence of ${pattern.length} lights\nBest ever: Round ${st.best}`;
+  document.getElementById('resultOverlay').classList.add('show');
+}
+
+init();
+</script>
 </body>
 </html>

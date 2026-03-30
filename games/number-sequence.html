@@ -7,306 +7,475 @@
   <link rel="stylesheet" href="../style.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    /* Big display */
     .display-box {
-      background: linear-gradient(135deg, #2d2b4e, #4a4580);
-      color: white;
       border-radius: 20px;
-      padding: 30px 20px;
+      padding: 22px 16px;
       text-align: center;
-      margin-bottom: 24px;
-      min-height: 120px;
+      margin-bottom: 18px;
+      min-height: 110px;
       display: flex; align-items: center; justify-content: center;
       flex-direction: column;
+      position: relative; overflow: hidden;
     }
-    .display-numbers {
-      font-size: 3rem;
-      font-weight: 900;
-      letter-spacing: 0.15em;
-      min-height: 1.2em;
+    .display-box.normal   { background: linear-gradient(135deg,#2d2b4e,#4a4580); }
+    .display-box.reverse  { background: linear-gradient(135deg,#8b1a1a,#c0392b); }
+    .display-box.math     { background: linear-gradient(135deg,#1a5276,#2980b9); }
+    .display-box.missing  { background: linear-gradient(135deg,#1a4731,#27ae60); }
+
+    .display-number {
+      font-size: 4rem; font-weight: 900; color: white;
+      letter-spacing: 0.1em; min-height: 1.1em;
+      animation: numPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
     }
+    @keyframes numPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+
     .display-label {
-      font-size: 0.85rem;
-      opacity: 0.7;
-      margin-top: 8px;
-      font-weight: 600;
+      font-size: 0.85rem; opacity: 0.75; margin-top: 8px; font-weight: 600; color: white;
+    }
+    .display-mode-badge {
+      position: absolute; top: 10px; right: 12px;
+      background: rgba(255,255,255,0.18); color: white;
+      font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 50px;
     }
 
-    .number-pad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      max-width: 320px;
-      margin: 0 auto 16px;
+    /* Progress dots showing sequence */
+    .seq-dots {
+      display: flex; justify-content: center; gap: 7px; margin-bottom: 14px; flex-wrap: wrap;
     }
-    .num-btn {
-      height: 72px;
-      background: white;
-      border: 2px solid #e0dcff;
-      border-radius: 16px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 1.7rem;
-      font-weight: 800;
-      color: #2d2b4e;
-      cursor: pointer;
-      transition: transform 0.12s, background 0.12s;
-      box-shadow: 0 3px 10px rgba(108,99,255,0.08);
+    .seq-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #e0dcff; transition: background 0.25s, transform 0.25s;
     }
-    .num-btn:active { transform: scale(0.91); background: #ede9ff; }
-    .num-btn.correct { background: #d4f7e9; border-color: #43c59e; }
-    .num-btn.wrong { background: #fde0e0; border-color: #ff6584; animation: shake 0.4s; }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    .seq-dot.shown  { background: #6c63ff; }
+    .seq-dot.input  { background: #ffd166; transform: scale(1.2); }
+    .seq-dot.right  { background: #43c59e; }
+    .seq-dot.wrong  { background: #ff6584; }
 
-    .answer-preview {
-      display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;
-      min-height: 50px; margin-bottom: 16px; align-items: center;
+    /* Answer slots */
+    .answer-row {
+      display: flex; justify-content: center; gap: 8px;
+      flex-wrap: wrap; min-height: 56px; margin-bottom: 16px; align-items: center;
     }
-    .ans-digit {
-      width: 44px; height: 50px;
+    .ans-slot {
+      width: 46px; height: 54px;
       background: white; border: 2px solid #6c63ff;
       border-radius: 12px; display: flex; align-items: center; justify-content: center;
       font-size: 1.4rem; font-weight: 900; color: #2d2b4e;
     }
-    .ans-digit.empty { border-style: dashed; color: #c8c2ff; }
+    .ans-slot.empty { border-style: dashed; color: #c8c2ff; font-size: 1rem; }
+    .ans-slot.correct { background: #d4f7e9; border-color: #43c59e; }
+    .ans-slot.wrong   { background: #fde0e0; border-color: #ff6584; }
+    .ans-slot.current { border-color: #ffd166; background: #fff8e1; animation: pulse 0.7s infinite alternate; }
+    @keyframes pulse { from{transform:scale(1)} to{transform:scale(1.06)} }
 
-    .del-btn {
-      padding: 14px;
-      background: white; border: 2px solid #fde0e0;
-      border-radius: 14px; font-family: 'Nunito',sans-serif;
-      font-size: 1.2rem; font-weight: 700; color: #ff6584;
-      cursor: pointer; transition: background 0.15s;
+    /* Number pad */
+    .numpad {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 8px; max-width: 300px; margin: 0 auto;
     }
-    .del-btn:active { background: #fde0e0; }
+    .nk {
+      height: 66px; background: white;
+      border: 2px solid #e0dcff; border-radius: 14px;
+      font-family: 'Nunito',sans-serif; font-size: 1.6rem; font-weight: 800;
+      color: #2d2b4e; cursor: pointer;
+      transition: transform 0.1s, background 0.1s;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.08);
+    }
+    .nk:active { transform: scale(0.9); background: #ede9ff; }
+    .nk.del { font-size: 1.2rem; color: #ff6584; border-color: #fde0e0; }
+    .nk.ok  { background: #6c63ff; color: white; border-color: #6c63ff; font-size: 1rem; font-weight: 800; }
+    .nk.ok:active { background: #5a52e0; }
+    .nk:disabled { opacity: 0.35; pointer-events: none; }
 
-    .seq-level-badge {
-      display: inline-flex; gap: 6px; align-items: center;
-      background: #ede9ff; color: #6c63ff;
-      border-radius: 50px; padding: 6px 16px;
-      font-size: 0.85rem; font-weight: 800;
-      margin-bottom: 16px;
+    /* Mode announcement */
+    .mode-announce {
+      position: fixed; inset: 0; background: rgba(45,43,78,0.75);
+      z-index: 300; display: none; align-items: center; justify-content: center;
     }
+    .mode-announce.show { display: flex; }
+    .mode-card {
+      background: white; border-radius: 24px; padding: 32px 28px;
+      text-align: center; max-width: 300px; width: 88%;
+      animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn { from{transform:scale(0.6);opacity:0} to{transform:scale(1);opacity:1} }
+    .mode-card .m-icon { font-size: 3.5rem; margin-bottom: 10px; }
+    .mode-card h3 { font-size: 1.4rem; font-weight: 900; margin-bottom: 8px; }
+    .mode-card p  { color: #7b78a8; font-size: 0.95rem; margin-bottom: 20px; }
   </style>
 </head>
 <body>
-  <div class="game-page">
-    <div class="game-header">
-      <a href="../index.html" class="back-btn">←</a>
-      <span class="game-title">🔢 Number Sequence</span>
-      <span class="game-score-header" id="headerScore">Level 1</span>
+<div class="game-page">
+  <div class="game-header">
+    <a href="../index.html" class="back-btn">←</a>
+    <span class="game-title">🔢 Number Sequence</span>
+    <span class="game-score-header" id="headerScore">Level 1</span>
+  </div>
+
+  <div class="game-body">
+    <div id="introScreen">
+      <div class="instruction-card">
+        <div style="font-size:3rem;margin-bottom:10px;">🔢</div>
+        <strong>How to play:</strong><br><br>
+        Watch numbers appear one by one — then type them back.<br><br>
+        As you level up, new challenges appear:<br>
+        🔄 <strong>Reverse</strong> — type the sequence backwards<br>
+        ➕ <strong>Maths</strong> — solve equations, type the answers<br>
+        ❓ <strong>Missing</strong> — fill in the gaps in the sequence<br><br>
+        <em style="font-size:0.85rem;color:#7b78a8;">Builds working memory, numerical processing, and mental agility.</em>
+      </div>
+      <div class="score-bar">
+        <div class="score-item"><div class="score-num" id="bestLevel">1</div><div class="score-label">Best Level</div></div>
+        <div class="score-item"><div class="score-num" id="totalNS">0</div><div class="score-label">Sessions</div></div>
+      </div>
+      <button class="big-btn" onclick="startGame()">Start Sequence 🔢</button>
     </div>
 
-    <div class="game-body">
-      <div id="introScreen">
-        <div class="instruction-card">
-          <div style="font-size:3rem;margin-bottom:10px;">🔢</div>
-          <strong>How to play:</strong><br><br>
-          Watch the numbers appear one by one.<br>
-          Then type them back in the same order!<br>
-          Each correct answer makes the sequence longer.<br><br>
-          <em style="font-size:0.85rem;color:#7b78a8;">Builds short-term memory and attention span.</em>
-        </div>
-        <div class="score-bar">
-          <div class="score-item"><div class="score-num" id="bestLevel">1</div><div class="score-label">Best Level</div></div>
-          <div class="score-item"><div class="score-num" id="totalNS">0</div><div class="score-label">Sessions</div></div>
-        </div>
-        <button class="big-btn" onclick="startGame()">Start Sequence 🔢</button>
+    <div id="gameScreen" style="display:none;">
+      <div class="score-bar">
+        <div class="score-item"><div class="score-num" id="levelDisplay">1</div><div class="score-label">Level</div></div>
+        <div class="score-item"><div class="score-num" id="lengthDisplay">3</div><div class="score-label">Length</div></div>
+        <div class="score-item"><div class="score-num" id="livesNS">❤️❤️❤️</div><div class="score-label">Lives</div></div>
       </div>
 
-      <div id="gameScreen" style="display:none;">
-        <div class="score-bar">
-          <div class="score-item"><div class="score-num" id="levelDisplay">1</div><div class="score-label">Level</div></div>
-          <div class="score-item"><div class="score-num" id="lengthDisplay">3</div><div class="score-label">Length</div></div>
-          <div class="score-item"><div class="score-num" id="livesNS">❤️❤️❤️</div><div class="score-label">Lives</div></div>
-        </div>
+      <div class="seq-dots" id="seqDots"></div>
 
-        <div class="seq-level-badge" id="phaseLabel">👁️ Watch carefully…</div>
-
-        <div class="display-box">
-          <div class="display-numbers" id="displayNumbers">3  ?  ?</div>
-          <div class="display-label" id="displayLabel">Numbers will appear here</div>
-        </div>
-
-        <div class="answer-preview" id="answerPreview"></div>
-
-        <div class="number-pad" id="numPad">
-          <button class="num-btn" onclick="inputDigit(1)">1</button>
-          <button class="num-btn" onclick="inputDigit(2)">2</button>
-          <button class="num-btn" onclick="inputDigit(3)">3</button>
-          <button class="num-btn" onclick="inputDigit(4)">4</button>
-          <button class="num-btn" onclick="inputDigit(5)">5</button>
-          <button class="num-btn" onclick="inputDigit(6)">6</button>
-          <button class="num-btn" onclick="inputDigit(7)">7</button>
-          <button class="num-btn" onclick="inputDigit(8)">8</button>
-          <button class="num-btn" onclick="inputDigit(9)">9</button>
-          <button class="del-btn" onclick="deleteDigit()">⌫</button>
-          <button class="num-btn" onclick="inputDigit(0)">0</button>
-          <button class="big-btn" style="margin:0;padding:0;height:72px;font-size:1rem;" onclick="submitAnswer()">OK ✓</button>
-        </div>
+      <div class="display-box normal" id="displayBox">
+        <div class="display-mode-badge" id="modeBadge">NORMAL</div>
+        <div class="display-number" id="displayNumber">?</div>
+        <div class="display-label" id="displayLabel">Get ready…</div>
       </div>
-    </div>
 
-    <div class="result-overlay" id="resultOverlay">
-      <div class="result-box">
-        <div class="result-emoji" id="resultEmoji">🎉</div>
-        <h2 id="resultTitle">Great memory!</h2>
-        <p id="resultMsg"></p>
-        <div class="result-actions">
-          <button class="big-btn" onclick="startGame()">Play Again</button>
-          <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
-        </div>
+      <div class="answer-row" id="answerRow"></div>
+
+      <div class="numpad">
+        <button class="nk" onclick="inp(1)">1</button>
+        <button class="nk" onclick="inp(2)">2</button>
+        <button class="nk" onclick="inp(3)">3</button>
+        <button class="nk" onclick="inp(4)">4</button>
+        <button class="nk" onclick="inp(5)">5</button>
+        <button class="nk" onclick="inp(6)">6</button>
+        <button class="nk" onclick="inp(7)">7</button>
+        <button class="nk" onclick="inp(8)">8</button>
+        <button class="nk" onclick="inp(9)">9</button>
+        <button class="nk del" onclick="del()">⌫</button>
+        <button class="nk" onclick="inp(0)">0</button>
+        <button class="nk ok" onclick="submit()">OK ✓</button>
       </div>
     </div>
   </div>
 
-  <script>
-    let level = 1, lives = 3, sequence = [], userInput = [], showing = false;
-    const BASE_LENGTH = 3; // digits at level 1
+  <!-- Mode announcement popup -->
+  <div class="mode-announce" id="modeAnnounce">
+    <div class="mode-card">
+      <div class="m-icon" id="modeIcon">🔄</div>
+      <h3 id="modeTitle">Reverse Mode!</h3>
+      <p id="modeDesc">Type the sequence backwards this time.</p>
+      <button class="big-btn" onclick="dismissMode()">Got it!</button>
+    </div>
+  </div>
 
-    function getStats() { return JSON.parse(localStorage.getItem('ns_stats') || '{"best":1,"sessions":0}'); }
-    function saveStats() {
-      const st = getStats();
-      if (level > st.best) st.best = level;
-      st.sessions = (st.sessions||0)+1;
-      localStorage.setItem('ns_stats', JSON.stringify(st));
-      const today = new Date().toDateString();
-      let g = JSON.parse(localStorage.getItem('brainSpark')||'{}');
-      if (g.lastDate===today){g.gamesPlayed=(g.gamesPlayed||0)+1;localStorage.setItem('brainSpark',JSON.stringify(g));}
-    }
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-box">
+      <div class="result-emoji" id="resultEmoji">🎉</div>
+      <h2 id="resultTitle">Great memory!</h2>
+      <p id="resultMsg"></p>
+      <div class="result-actions">
+        <button class="big-btn" onclick="startGame()">Play Again</button>
+        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+      </div>
+    </div>
+  </div>
+</div>
 
-    function init() {
-      const st = getStats();
-      document.getElementById('bestLevel').textContent = st.best;
-      document.getElementById('totalNS').textContent = st.sessions;
-    }
+<script>
+let level=1, lives=3, sequence=[], answers=[], userInput=[], showing=false;
+let mode='normal'; // normal, reverse, math, missing
+let mathEquations=[], missingIndices=[];
+let pendingModeAnnounce=null;
 
-    function startGame() {
-      level = 1; lives = 3; userInput = [];
-      document.getElementById('introScreen').style.display = 'none';
-      document.getElementById('resultOverlay').classList.remove('show');
-      document.getElementById('gameScreen').style.display = '';
-      setInputEnabled(false);
-      nextRound();
-    }
+const BASE_LEN=3;
+function seqLen(){ return BASE_LEN+Math.floor((level-1)/2); }
+function showSpeed(){ return Math.max(400,1000-level*45); }
 
-    function seqLength() { return BASE_LENGTH + Math.floor((level - 1) / 2); }
+function getStats(){return JSON.parse(localStorage.getItem('ns2_stats')||'{"best":1,"sessions":0}');}
+function saveStats(){
+  const st=getStats();
+  if(level>st.best)st.best=level;
+  st.sessions=(st.sessions||0)+1;
+  localStorage.setItem('ns2_stats',JSON.stringify(st));
+  const today=new Date().toDateString();
+  let g=JSON.parse(localStorage.getItem('brainSpark')||'{}');
+  if(g.lastDate===today){g.gamesPlayed=(g.gamesPlayed||0)+1;localStorage.setItem('brainSpark',JSON.stringify(g));}
+}
+function init(){
+  const st=getStats();
+  document.getElementById('bestLevel').textContent=st.best;
+  document.getElementById('totalNS').textContent=st.sessions;
+}
 
-    function nextRound() {
-      userInput = [];
-      const len = seqLength();
-      sequence = Array.from({ length: len }, () => Math.floor(Math.random() * 10));
-      updateUI();
-      renderAnswerPreview();
-      showSequence();
-    }
+function pickMode(){
+  if(level<4)return'normal';
+  if(level<7){return level%2===0?'reverse':'normal';}
+  const r=Math.random();
+  if(r<0.3)return'reverse';
+  if(r<0.5)return'math';
+  if(r<0.65)return'missing';
+  return'normal';
+}
 
-    function updateUI() {
-      document.getElementById('levelDisplay').textContent = level;
-      document.getElementById('lengthDisplay').textContent = seqLength();
-      document.getElementById('livesNS').textContent = '❤️'.repeat(Math.max(0, lives));
-      document.getElementById('headerScore').textContent = 'Level ' + level;
-    }
+function startGame(){
+  level=1;lives=3;userInput=[];showing=false;
+  document.getElementById('introScreen').style.display='none';
+  document.getElementById('resultOverlay').classList.remove('show');
+  document.getElementById('gameScreen').style.display='';
+  setInputEnabled(false);
+  nextRound();
+}
 
-    function showSequence() {
-      showing = true;
-      setInputEnabled(false);
-      setPhase('👁️ Watch carefully…');
-      document.getElementById('displayLabel').textContent = 'Remember these numbers';
+function nextRound(){
+  if(lives<=0){saveStats();endGame();return;}
+  userInput=[];
+  mode=pickMode();
+  sequence=Array.from({length:seqLen()},()=>Math.floor(Math.random()*10));
+  answers=[...sequence];
 
-      let i = 0;
-      document.getElementById('displayNumbers').textContent = '…';
+  if(mode==='reverse') answers=[...sequence].reverse();
+  if(mode==='math'){
+    // Generate simple arithmetic: a+b, a-b
+    mathEquations=sequence.map(n=>{
+      const a=Math.floor(Math.random()*9)+1;
+      const b=n>=a?n-a:Math.floor(Math.random()*n)+n; // ensure answer=n
+      const op=n>=a?'+':'-';
+      return op==='+'?{text:`${a}+${n-a}`,ans:n}:{text:`${n+Math.floor(Math.random()*5)+1}-${Math.floor(Math.random()*5)+1}`,ans:null};
+    });
+    // Simpler: just a+b=? where b random 1-5
+    mathEquations=sequence.map(n=>{
+      const b=Math.floor(Math.random()*4)+1;
+      const a=n+b;
+      return{text:`${a} − ${b}`,ans:n};
+    });
+    answers=mathEquations.map(e=>e.ans);
+  }
+  if(mode==='missing'){
+    // Show sequence with some slots hidden (? marks), user fills in blanks
+    const numMissing=Math.max(1,Math.floor(seqLen()/2));
+    const allIdx=Array.from({length:seqLen()},(_,i)=>i);
+    missingIndices=allIdx.sort(()=>Math.random()-0.5).slice(0,numMissing).sort((a,b)=>a-b);
+    answers=sequence.filter((_,i)=>missingIndices.includes(i));
+  }
 
-      function showNext() {
-        if (i < sequence.length) {
-          document.getElementById('displayNumbers').textContent = sequence[i];
-          setTimeout(() => {
-            document.getElementById('displayNumbers').textContent = '';
-            setTimeout(() => { i++; showNext(); }, 200);
-          }, 900 - Math.min(level * 30, 400));
+  updateUI();
+  buildSeqDots();
+  updateModeUI();
+
+  if(needsAnnouncement()){
+    announceModeAndThen(()=>playShowPhase());
+  } else {
+    playShowPhase();
+  }
+}
+
+function needsAnnouncement(){
+  return (mode==='reverse'&&level===4)||(mode==='math'&&level===7)||(mode==='missing'&&level===9);
+}
+
+const MODES_INFO={
+  reverse:{icon:'🔄',title:'Reverse Mode!',desc:'Watch the sequence, then type it BACKWARDS.',color:'normal'},
+  math:{icon:'➕',title:'Maths Mode!',desc:'Solve each equation and type all the answers in order.',color:'normal'},
+  missing:{icon:'❓',title:'Missing Mode!',desc:'See the sequence with gaps — type only the missing numbers!',color:'normal'},
+};
+
+function announceModeAndThen(cb){
+  const info=MODES_INFO[mode];
+  if(!info){cb();return;}
+  document.getElementById('modeIcon').textContent=info.icon;
+  document.getElementById('modeTitle').textContent=info.title;
+  document.getElementById('modeDesc').textContent=info.desc;
+  document.getElementById('modeAnnounce').classList.add('show');
+  pendingModeAnnounce=cb;
+}
+function dismissMode(){
+  document.getElementById('modeAnnounce').classList.remove('show');
+  if(pendingModeAnnounce){pendingModeAnnounce();pendingModeAnnounce=null;}
+}
+
+function updateModeUI(){
+  const box=document.getElementById('displayBox');
+  const badge=document.getElementById('modeBadge');
+  const modeMap={
+    normal:['display-box normal','NORMAL'],
+    reverse:['display-box reverse','REVERSE ↩'],
+    math:['display-box math','MATHS ➕'],
+    missing:['display-box missing','MISSING ❓']
+  };
+  box.className=modeMap[mode][0];
+  badge.textContent=modeMap[mode][1];
+}
+
+function playShowPhase(){
+  showing=true;
+  setInputEnabled(false);
+  setLabel('Watch carefully…');
+  setNum('…');
+  buildSeqDots();
+
+  if(mode==='missing'){
+    // Show full sequence but blank the missing ones
+    let i=0;
+    function showNext(){
+      if(i<sequence.length){
+        dotActivate(i);
+        if(missingIndices.includes(i)){
+          setNum('?'); // show blank
         } else {
-          showing = false;
-          document.getElementById('displayNumbers').textContent = '?'.repeat(seqLength()).split('').join('  ');
-          document.getElementById('displayLabel').textContent = 'Now type the sequence';
-          setPhase('🎯 Your turn! Type what you saw');
-          setInputEnabled(true);
-          renderAnswerPreview();
+          setNum(sequence[i]);
         }
-      }
-
-      setTimeout(showNext, 600);
-    }
-
-    function setPhase(msg) {
-      document.getElementById('phaseLabel').textContent = msg;
-    }
-
-    function setInputEnabled(on) {
-      document.querySelectorAll('.num-btn,.del-btn').forEach(b => {
-        b.style.opacity = on ? '1' : '0.4';
-        b.style.pointerEvents = on ? '' : 'none';
-      });
-      const okBtn = document.querySelector('.big-btn[onclick="submitAnswer()"]');
-      if (okBtn) { okBtn.style.opacity = on ? '1' : '0.4'; okBtn.style.pointerEvents = on ? '' : 'none'; }
-    }
-
-    function inputDigit(d) {
-      if (showing || userInput.length >= seqLength()) return;
-      userInput.push(d);
-      renderAnswerPreview();
-      if (userInput.length === seqLength()) submitAnswer();
-    }
-
-    function deleteDigit() {
-      if (showing) return;
-      userInput.pop();
-      renderAnswerPreview();
-    }
-
-    function renderAnswerPreview() {
-      const row = document.getElementById('answerPreview');
-      row.innerHTML = '';
-      const len = seqLength();
-      for (let i = 0; i < len; i++) {
-        const d = document.createElement('div');
-        d.className = 'ans-digit' + (i >= userInput.length ? ' empty' : '');
-        d.textContent = i < userInput.length ? userInput[i] : '_';
-        row.appendChild(d);
-      }
-    }
-
-    function submitAnswer() {
-      if (showing || userInput.length < seqLength()) return;
-      setInputEnabled(false);
-      const correct = userInput.every((v, i) => v === sequence[i]);
-      const digits = document.querySelectorAll('.ans-digit');
-      digits.forEach((d, i) => {
-        if (userInput[i] === sequence[i]) d.classList.add('correct-anim');
-        else d.classList.add('wrong-anim');
-      });
-      document.getElementById('displayNumbers').textContent = sequence.join('  ');
-      document.getElementById('displayLabel').textContent = 'The sequence was:';
-      if (correct) {
-        level++;
-        setTimeout(nextRound, 1200);
+        setTimeout(()=>{setNum(''); setTimeout(()=>{i++;showNext();},150);},showSpeed());
       } else {
-        lives--;
-        updateUI();
-        if (lives <= 0) {
-          saveStats();
-          setTimeout(endGame, 1200);
-        } else {
-          setTimeout(nextRound, 1400);
-        }
+        showing=false;
+        setLabel('Type the '+answers.length+' missing numbers');
+        setNum('?');
+        setInputEnabled(true);
+        renderAnswerRow();
       }
     }
+    setTimeout(showNext,500);
+    return;
+  }
 
-    function endGame() {
-      const st = getStats();
-      document.getElementById('resultEmoji').textContent = level >= 8 ? '🧠' : level >= 5 ? '🌟' : '💪';
-      document.getElementById('resultTitle').textContent = level >= 8 ? 'Incredible memory!' : level >= 5 ? 'Strong memory!' : 'Good start!';
-      document.getElementById('resultMsg').textContent = `You reached Level ${level} (sequences of ${seqLength()} digits).\nBest ever: Level ${st.best}.`;
-      document.getElementById('resultOverlay').classList.add('show');
+  if(mode==='math'){
+    let i=0;
+    function showEq(){
+      if(i<mathEquations.length){
+        dotActivate(i);
+        setNum(mathEquations[i].text);
+        setTimeout(()=>{setNum(''); setTimeout(()=>{i++;showEq();},200);},showSpeed()+200);
+      } else {
+        showing=false;
+        setLabel('Type all '+answers.length+' answers in order');
+        setNum('?');
+        setInputEnabled(true);
+        renderAnswerRow();
+      }
     }
+    setTimeout(showEq,500);
+    return;
+  }
 
-    init();
-  </script>
+  // normal / reverse
+  let i=0;
+  function showNext(){
+    if(i<sequence.length){
+      dotActivate(i);
+      setNum(sequence[i]);
+      setTimeout(()=>{setNum(''); setTimeout(()=>{i++;showNext();},150);},showSpeed());
+    } else {
+      showing=false;
+      const hint=mode==='reverse'?'Type it BACKWARDS ↩':'Type the sequence';
+      setLabel(hint);
+      setNum(mode==='reverse'?'↩':'→');
+      setInputEnabled(true);
+      renderAnswerRow();
+    }
+  }
+  setTimeout(showNext,500);
+}
+
+function dotActivate(i){
+  const dots=document.querySelectorAll('.seq-dot');
+  if(dots[i])dots[i].classList.add('shown');
+}
+
+function buildSeqDots(){
+  const d=document.getElementById('seqDots');
+  d.innerHTML='';
+  const count=mode==='missing'?answers.length:seqLen();
+  for(let i=0;i<count;i++){
+    const dot=document.createElement('div');
+    dot.className='seq-dot';
+    d.appendChild(dot);
+  }
+}
+
+function renderAnswerRow(){
+  const row=document.getElementById('answerRow');
+  row.innerHTML='';
+  for(let i=0;i<answers.length;i++){
+    const s=document.createElement('div');
+    s.className='ans-slot'+(i>=userInput.length?i===userInput.length?' current':' empty':'');
+    s.textContent=i<userInput.length?userInput[i]:'_';
+    s.id='slot_'+i;
+    row.appendChild(s);
+  }
+}
+
+function inp(d){
+  if(showing||userInput.length>=answers.length)return;
+  userInput.push(d);
+  renderAnswerRow();
+  if(userInput.length===answers.length)setTimeout(submit,300);
+}
+function del(){
+  if(showing)return;
+  userInput.pop();
+  renderAnswerRow();
+}
+
+function submit(){
+  if(showing||userInput.length<answers.length)return;
+  setInputEnabled(false);
+  const correct=userInput.every((v,i)=>v===answers[i]);
+
+  // Show result in slots
+  const slots=document.querySelectorAll('.ans-slot');
+  slots.forEach((s,i)=>{
+    s.classList.remove('current','empty');
+    s.textContent=answers[i];
+    s.classList.add(userInput[i]===answers[i]?'correct':'wrong');
+  });
+  // Show correct sequence
+  setNum(correct?'✓':'✗');
+  setLabel(correct?'Correct!':'The answer was: '+answers.join(' '));
+
+  if(correct){
+    level++;
+  } else {
+    lives--;
+    updateUI();
+    if(lives<=0){saveStats();setTimeout(endGame,1200);return;}
+  }
+  setTimeout(nextRound,1300);
+}
+
+function updateUI(){
+  document.getElementById('levelDisplay').textContent=level;
+  document.getElementById('lengthDisplay').textContent=seqLen();
+  document.getElementById('livesNS').textContent='❤️'.repeat(Math.max(0,lives));
+  document.getElementById('headerScore').textContent='Level '+level;
+}
+function setNum(t){
+  const el=document.getElementById('displayNumber');
+  el.textContent=t;
+  el.style.animation='none';
+  void el.getBoundingClientRect();
+  el.style.animation='';
+}
+function setLabel(t){document.getElementById('displayLabel').textContent=t;}
+function setInputEnabled(on){
+  document.querySelectorAll('.nk').forEach(b=>{b.disabled=!on;});
+}
+
+function endGame(){
+  const st=getStats();
+  document.getElementById('resultEmoji').textContent=level>=10?'🧠':level>=6?'🌟':'💪';
+  document.getElementById('resultTitle').textContent=level>=10?'Phenomenal!':level>=6?'Sharp mind!':'Good try!';
+  document.getElementById('resultMsg').textContent=`Reached Level ${level} (sequences of ${seqLen()} digits)\nBest ever: Level ${st.best}`;
+  document.getElementById('resultOverlay').classList.add('show');
+}
+
+init();
+</script>
 </body>
 </html>
