@@ -344,7 +344,8 @@
     <div class="section-intro">
       <div class="s-icon">📋</div>
       <h2>Part A: Behavioural Assessment</h2>
-      <p>Think about how things are <strong>compared to 2–3 years ago</strong>. Answer as honestly as possible — there are no right or wrong answers.</p>
+      <p>Think about how things are <strong>compared to 2–3 years ago</strong>. For each statement, choose the option that best describes you. There are no right or wrong answers.</p>
+      <p style="margin-top:10px;font-size:0.82rem;opacity:0.85;">Example: <em>"Memory problems — forgetting conversations or appointments"</em> → you would pick <strong>No change</strong>, <strong>Slight change</strong>, or <strong>Significant change</strong>.</p>
     </div>
     <div class="card">
       <span class="science-ref">Adapted from AD8 (Galvin et al., 2005, Neurology) · NPI (Cummings et al., 1994, Neurology) · Lawton IADL Scale (1969)</span>
@@ -593,12 +594,27 @@ const BEHAV_OPTS = [
 function buildBehav(){
   const card=document.getElementById('behavCard');
   card.innerHTML='';
+  const progressBar=document.createElement('div');
+  progressBar.style.cssText='margin-bottom:16px;';
+  progressBar.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--muted);font-weight:700;margin-bottom:6px;"><span id="behavProgressLabel">Question 1 of ${BEHAV_QS.length}</span><span id="behavProgressPct">0%</span></div><div style="height:6px;background:var(--border-2);border-radius:6px;overflow:hidden;"><div id="behavProgressFill" style="height:100%;width:0%;background:var(--primary);border-radius:6px;transition:width 0.4s ease;"></div></div>`;
+  card.appendChild(progressBar);
   BEHAV_QS.forEach((q,i)=>{
     const block=document.createElement('div');
     block.className='q-block';
     block.innerHTML=`<div class="q-text"><span class="q-num">${i+1}</span>${q.text}</div><div class="q-science">${q.science}</div>`;
     const optsDiv=document.createElement('div');
     buildOptions(optsDiv,q.id,BEHAV_OPTS);
+    // Update progress bar on selection
+    optsDiv.addEventListener('click',()=>{
+      const answered=BEHAV_QS.filter(bq=>getSelected(bq.id)!==null).length;
+      const pct=Math.round(answered/BEHAV_QS.length*100);
+      const fill=document.getElementById('behavProgressFill');
+      const lbl=document.getElementById('behavProgressLabel');
+      const pctLbl=document.getElementById('behavProgressPct');
+      if(fill)fill.style.width=pct+'%';
+      if(lbl)lbl.textContent=`Question ${Math.min(answered+1,BEHAV_QS.length)} of ${BEHAV_QS.length}`;
+      if(pctLbl)pctLbl.textContent=pct+'%';
+    });
     block.appendChild(optsDiv);
     card.appendChild(block);
     if(i<BEHAV_QS.length-1){const hr=document.createElement('hr');hr.style.cssText='border:none;border-top:1px solid #f0eeff;margin:4px 0 16px';card.appendChild(hr);}
@@ -672,18 +688,28 @@ function initMemory(){
 
 function renderMemPhase(){
   if(memPhase===0){
-    // Show words one by one with countdown
+    // Instruction screen before words appear
     document.getElementById('memLearnSection').innerHTML=`
       <div class="card">
-        <div class="q-text" style="text-align:center;">Study these 7 words carefully.<br>They will disappear — you will need to recall them twice.</div>
-        <div class="word-display" id="memWordDisplay">
-          <div class="big-word" id="memWordText">Press Start</div>
-          <div class="word-counter" id="memWordCounter">Word 0 of 7</div>
+        <div class="card-title" style="font-size:1.1rem;">How this works</div>
+        <div style="background:rgba(139,92,246,0.1);border-radius:14px;padding:18px;margin:12px 0;border-left:4px solid var(--primary);">
+          <div style="font-size:1rem;font-weight:700;color:var(--text);line-height:1.7;">
+            ✅ <strong>You do not need to click anything.</strong><br>
+            Words will appear on screen one at a time — just read them carefully and try to remember them.<br><br>
+            After all 7 words have been shown, you will be asked to write down as many as you can recall.
+          </div>
+        </div>
+        <div style="font-size:0.88rem;color:var(--muted);line-height:1.6;">
+          Take your time reading each word. There is no rush during the word display.
+        </div>
+        <div class="word-display" id="memWordDisplay" style="display:none;">
+          <div class="big-word" id="memWordText"></div>
+          <div class="word-counter" id="memWordCounter"></div>
         </div>
         <div id="memWordGrid" class="word-grid"></div>
       </div>`;
     document.getElementById('memRecallSection').style.display='none';
-    document.getElementById('memBtn').textContent='Start showing words →';
+    document.getElementById('memBtn').textContent='I\'m ready — show me the words →';
   }
   if(memPhase===1){
     // Showing words (handled by memNext)
@@ -713,6 +739,8 @@ function memNext(){
     const shown=[];
     const grid=document.getElementById('memWordGrid');
     if(grid)grid.innerHTML='';
+    const disp=document.getElementById('memWordDisplay');
+    if(disp)disp.style.display='';
     function showNextWord(){
       if(memWordIndex<memWords.length){
         const w=memWords[memWordIndex];
@@ -776,16 +804,21 @@ function renderAttnPhase(){
     document.getElementById('attnSection').innerHTML=`
       <div class="card">
         <div class="card-title">Task 1 of 2 — Serial Subtraction</div>
-        <div class="card-body">Starting from <strong>100</strong>, subtract 7 each time.<br>Enter each answer in order. Do it mentally — no calculator!</div>
+        <div class="card-body">We will ask you to <strong>subtract 7 from 100</strong>, then keep subtracting 7 from each answer, 5 times in a row. Do it mentally — no calculator!</div>
         <div class="q-science">The 100-7 test measures sustained attention and working memory. Each correct step scores 1 point (max 5). MMSE, Folstein 1975.</div>
+        <div style="background:rgba(139,92,246,0.1);border-radius:14px;padding:16px;margin:14px 0;border-left:4px solid var(--primary);">
+          <div style="font-size:0.85rem;font-weight:700;color:var(--primary);margin-bottom:8px;">Example — how it works:</div>
+          <div style="font-size:1rem;font-weight:800;color:var(--text);letter-spacing:0.02em;">100 → 93 → 86 → 79 → 72 → 65</div>
+          <div style="font-size:0.8rem;color:var(--muted);margin-top:6px;">Each step: take the previous number and subtract 7. Enter each result in the boxes below.</div>
+        </div>
         <div style="background:var(--primary-light);border-radius:14px;padding:16px;text-align:center;margin:14px 0;">
           <div style="font-size:2.5rem;font-weight:900;color:var(--primary);">100</div>
           <div style="font-size:0.85rem;color:var(--muted);margin-top:4px;">Start here · subtract 7 each time</div>
         </div>
         ${[0,1,2,3,4].map(i=>`
           <div class="q-block">
-            <div class="q-text" style="font-size:0.9rem;">${i===0?'100 − 7 =':''} Step ${i+1}:</div>
-            <input class="text-input" type="number" id="sub${i}" placeholder="Your answer" inputmode="numeric" pattern="[0-9]*">
+            <div class="q-text" style="font-size:0.9rem;">Step ${i+1}: ${i===0?'100 − 7 =':'previous answer − 7 ='}</div>
+            <input class="text-input" type="number" id="sub${i}" placeholder="Enter your answer" inputmode="numeric" pattern="[0-9]*">
           </div>`).join('')}
       </div>`;
     document.getElementById('attnBtn').textContent='Submit & next task →';
@@ -945,18 +978,53 @@ function renderLangPhase(){
     sec.innerHTML=`
       <div class="card">
         <div class="card-title">Task 3 of 3 — Sentence Repetition</div>
-        <div class="card-body">Read each sentence carefully, then type it back <strong>word for word</strong> as accurately as you can.</div>
+        <div class="card-body">Read each sentence carefully. <strong>When it disappears</strong>, type it back word for word from memory.</div>
         <div class="q-science">Sentence repetition tests phonological working memory and syntactic processing — impaired early in semantic dementia and AD (Hodges & Patterson, 2007).</div>
-        ${SENT_REPEAT.map((s,i)=>`
-          <div class="q-block">
-            <div style="background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:10px;font-size:0.95rem;font-weight:700;color:var(--text);font-style:italic;">"${s}"</div>
-            <input class="text-input" id="sentRep${i}" placeholder="Type the sentence…" autocomplete="off">
-          </div>`).join('')}
+        <div id="sentRepContainer"></div>
       </div>`;
-    document.getElementById('langBtn').textContent='Submit & continue →';
+    document.getElementById('langBtn').style.display='none';
+    buildSentenceRepeat(0);
   }
 }
 
+function buildSentenceRepeat(idx){
+  const container=document.getElementById('sentRepContainer');
+  if(!container)return;
+  if(idx>=SENT_REPEAT.length){
+    // All sentences done — show submit button
+    document.getElementById('langBtn').style.display='';
+    document.getElementById('langBtn').textContent='Submit & continue →';
+    return;
+  }
+  const s=SENT_REPEAT[idx];
+  container.innerHTML=`
+    <div class="q-block" id="sentBlock${idx}">
+      <div style="font-size:0.88rem;color:var(--muted);margin-bottom:8px;">Sentence ${idx+1} of ${SENT_REPEAT.length} — read it, then it will disappear:</div>
+      <div id="sentDisplay${idx}" style="background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:10px;font-size:0.95rem;font-weight:700;color:var(--text);font-style:italic;transition:opacity 0.5s;">"${s}"</div>
+      <div id="sentInputWrap${idx}" style="display:none;">
+        <div style="font-size:0.88rem;color:var(--muted);margin-bottom:8px;">Now type the sentence from memory:</div>
+        <input class="text-input" id="sentRep${idx}" placeholder="Type the sentence…" autocomplete="off">
+        ${idx<SENT_REPEAT.length-1?`<button class="big-btn" style="margin-top:12px;" onclick="submitSentence(${idx})">Next sentence →</button>`:`<button class="big-btn" style="margin-top:12px;" onclick="submitSentence(${idx})">Done →</button>`}
+      </div>
+    </div>`;
+  // After 4 seconds, fade out the sentence and show the input
+  setTimeout(()=>{
+    const disp=document.getElementById('sentDisplay'+idx);
+    if(disp)disp.style.opacity='0';
+    setTimeout(()=>{
+      if(disp)disp.style.display='none';
+      const wrap=document.getElementById('sentInputWrap'+idx);
+      if(wrap){wrap.style.display='';const inp=document.getElementById('sentRep'+idx);if(inp)inp.focus();}
+    },500);
+  },4000);
+}
+
+function submitSentence(idx){
+  // Save answer, move to next
+  buildSentenceRepeat(idx+1);
+}
+
+const FLUENCY_MILESTONES={5:'Nice — keep going!',10:'Great memory! 10 animals!',15:'Impressive — 15 animals!',20:'Exceptional — 20 animals!'};
 function addFluencyWord(){
   if(fluencySecondsLeft<=0)return;
   const inp=document.getElementById('fluencyInput');
@@ -968,7 +1036,19 @@ function addFluencyWord(){
   tag.className='f-tag';
   tag.textContent=w;
   document.getElementById('fluencyTags').appendChild(tag);
-  document.getElementById('fluencyCount').textContent=fluencyWords.length+' words';
+  const cnt=fluencyWords.length;
+  document.getElementById('fluencyCount').textContent=cnt+' words';
+  // Show milestone message
+  if(FLUENCY_MILESTONES[cnt]){
+    const milestone=document.createElement('div');
+    milestone.style.cssText='font-size:0.8rem;font-weight:700;color:var(--green);margin-top:6px;animation:tagPop 0.3s ease;';
+    milestone.textContent=FLUENCY_MILESTONES[cnt];
+    milestone.id='fluencyMilestone';
+    const existing=document.getElementById('fluencyMilestone');
+    if(existing)existing.remove();
+    document.getElementById('fluencyTags').after(milestone);
+    setTimeout(()=>{if(milestone.parentNode)milestone.remove();},2000);
+  }
 }
 
 function langNext(){
@@ -997,14 +1077,13 @@ function langNext(){
     return;
   }
   if(langPhase===2){
-    // Score sentence repetition
+    // Score sentence repetition (inputs were submitted via submitSentence, just read them now)
     let sentScore=0;
     SENT_REPEAT.forEach((s,i)=>{
       const inp=document.getElementById('sentRep'+i);
       if(!inp)return;
       const given=inp.value.trim().toLowerCase().replace(/[.,'!?]/g,'');
       const target=s.toLowerCase().replace(/[.,'!?]/g,'');
-      // Count matching words
       const tw=target.split(' ');const gw=given.split(' ');
       const matchPct=tw.filter(w=>gw.includes(w)).length/tw.length;
       if(matchPct>=0.85)sentScore+=2;else if(matchPct>=0.6)sentScore+=1;
