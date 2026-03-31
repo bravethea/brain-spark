@@ -6,22 +6,305 @@
   <title>Brain Spark – Keep Your Mind Sharp</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- SVG Icon Definitions -->
+  <svg style="display:none" aria-hidden="true">
+    <defs>
+
+      <!-- Brain: custom two-lobe neural design -->
+      <symbol id="ic-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 5c-1.8.8-3 2.6-3 4.5 0 .9.3 1.7.9 2.3-.6.7-.9 1.6-.9 2.7 0 2 1.6 3.5 3.5 3.5"/>
+        <path d="M15 5c1.8.8 3 2.6 3 4.5 0 .9-.3 1.7-.9 2.3.6.7.9 1.6.9 2.7 0 2-1.6 3.5-3.5 3.5"/>
+        <line x1="12" y1="5" x2="12" y2="18"/>
+        <path d="M9.5 18v1.5a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V18"/>
+        <circle cx="8.5" cy="9.5" r=".6" fill="currentColor" stroke="none"/>
+        <circle cx="15.5" cy="9.5" r=".6" fill="currentColor" stroke="none"/>
+        <circle cx="8" cy="13" r=".6" fill="currentColor" stroke="none"/>
+        <circle cx="16" cy="13" r=".6" fill="currentColor" stroke="none"/>
+      </symbol>
+
+      <!-- Flame: streak indicator -->
+      <symbol id="ic-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 17c1.38 0 2.5-1.12 2.5-2.5 0-1.19-.5-2.5-1.5-3.5.5 1-.5 2-1.5 2.5"/>
+        <path d="M12 2C7 6 8 13 8 14.5A4 4 0 0 0 12 18a4 4 0 0 0 4-3.5c.5-2.5-1-7-4-12.5z"/>
+      </symbol>
+
+      <!-- Atom: science branding -->
+      <symbol id="ic-atom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/>
+        <ellipse cx="12" cy="12" rx="9" ry="3.5"/>
+        <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)"/>
+        <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(120 12 12)"/>
+      </symbol>
+
+      <!-- Pulse / EEG: brain health check -->
+      <symbol id="ic-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </symbol>
+
+      <!-- Arrow Left: back navigation -->
+      <symbol id="ic-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5"/>
+        <path d="m12 19-7-7 7-7"/>
+      </symbol>
+
+      <!-- ── GAME ICONS (custom designed) ────────── -->
+
+      <!-- Lightning bolt with neural arc: Quick Flash -->
+      <symbol id="ic-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 2L4 14h7.5L10 22l10-12h-7.5L13 2z"/>
+        <path d="M7 8.5C5.5 9 5 10 5 11" opacity=".5"/>
+      </symbol>
+
+      <!-- Two overlapping cards with flip hint: Memory Match -->
+      <symbol id="ic-cards" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="7.5" y="2" width="12" height="16" rx="2.5"/>
+        <rect x="4" y="6" width="12" height="16" rx="2.5"/>
+        <path d="M7 12.5h5"/>
+        <path d="M7 15h3"/>
+      </symbol>
+
+      <!-- Shuffle arrows: Word Scramble -->
+      <symbol id="ic-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 3h5v5"/>
+        <path d="M4 20 21 3"/>
+        <path d="M21 16v5h-5"/>
+        <path d="M15 15l5.1 5.1"/>
+        <path d="M4 4l5 5"/>
+      </symbol>
+
+      <!-- Dots connected by line with arrow: Number Sequence -->
+      <symbol id="ic-sequence" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="4" cy="12" r="2.5"/>
+        <circle cx="12" cy="12" r="2.5"/>
+        <circle cx="20" cy="12" r="2.5"/>
+        <line x1="6.5" y1="12" x2="9.5" y2="12"/>
+        <line x1="14.5" y1="12" x2="17.5" y2="12"/>
+        <path d="M4 7l-1.5 5 1.5 5" opacity=".4"/>
+        <path d="M20 7l1.5 5-1.5 5" opacity=".4"/>
+      </symbol>
+
+      <!-- 2×2 light grid (diagonal filled): Pattern Lights -->
+      <symbol id="ic-grid" viewBox="0 0 24 24">
+        <circle cx="7" cy="7" r="3.8" fill="currentColor"/>
+        <circle cx="17" cy="7" r="3.8" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <circle cx="7" cy="17" r="3.8" fill="none" stroke="currentColor" stroke-width="1.7"/>
+        <circle cx="17" cy="17" r="3.8" fill="currentColor"/>
+      </symbol>
+
+      <!-- ── TIP ICONS ─────────────────────────────── -->
+
+      <!-- Bolt small (reuse ic-bolt path but simpler) -->
+      <symbol id="ic-t-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 2L4 14h7.5L10 22l10-12h-7.5z"/>
+      </symbol>
+
+      <!-- Refresh/repeat cycle -->
+      <symbol id="ic-t-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 4v6h-6"/>
+        <path d="M20.49 15a9 9 0 1 1-.03-3.36"/>
+      </symbol>
+
+      <!-- Book open -->
+      <symbol id="ic-t-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </symbol>
+
+      <!-- Music note -->
+      <symbol id="ic-t-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5l12-2v13"/>
+        <circle cx="6" cy="18" r="3"/>
+        <circle cx="18" cy="16" r="3"/>
+      </symbol>
+
+      <!-- Users / social -->
+      <symbol id="ic-t-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </symbol>
+
+      <!-- Pen / learn something new -->
+      <symbol id="ic-t-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 9.5-9.5z"/>
+      </symbol>
+
+      <!-- Activity / walking / aerobic -->
+      <symbol id="ic-t-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </symbol>
+
+      <!-- Dumbbell / strength -->
+      <symbol id="ic-t-dumbbell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="6.5" y1="6.5" x2="17.5" y2="17.5"/>
+        <path d="M3 11.5l7 7"/>
+        <path d="M11.5 3l7 7"/>
+        <rect x="1.5" y="9.5" width="4" height="5" rx="1" transform="rotate(-45 3.5 12)"/>
+        <rect x="18.5" y="9.5" width="4" height="5" rx="1" transform="rotate(-45 20.5 12)"/>
+      </symbol>
+
+      <!-- Wind / breath / yoga -->
+      <symbol id="ic-t-wind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/>
+        <path d="M10.59 11.41A2 2 0 1 0 14 16H2"/>
+        <path d="M15.73 3.73A2.5 2.5 0 1 1 19.5 12H2"/>
+      </symbol>
+
+      <!-- Moon / sleep -->
+      <symbol id="ic-t-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </symbol>
+
+      <!-- Clock / sleep schedule -->
+      <symbol id="ic-t-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </symbol>
+
+      <!-- Monitor + X / no screens -->
+      <symbol id="ic-t-screen-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+        <line x1="9.5" y1="8.5" x2="14.5" y2="13.5"/>
+        <line x1="14.5" y1="8.5" x2="9.5" y2="13.5"/>
+      </symbol>
+
+      <!-- Berries: three dots -->
+      <symbol id="ic-t-berries" viewBox="0 0 24 24">
+        <circle cx="8" cy="9" r="3.5" fill="currentColor"/>
+        <circle cx="16" cy="9" r="3.5" fill="currentColor"/>
+        <circle cx="12" cy="16" r="3.5" fill="currentColor"/>
+      </symbol>
+
+      <!-- Fish -->
+      <symbol id="ic-t-fish" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6.5 12C6.5 8.5 9 6 12 6c5 0 8 3 8 6s-3 6-8 6c-3 0-5.5-2.5-5.5-6z"/>
+        <path d="M20.5 12l3-4"/>
+        <path d="M20.5 12l3 4"/>
+        <circle cx="9.5" cy="11" r="1" fill="currentColor" stroke="none"/>
+      </symbol>
+
+      <!-- Leaf / Mediterranean diet -->
+      <symbol id="ic-t-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C6 6 4 12 4 16a8 8 0 0 0 16 0c0-4-2-10-8-14z"/>
+        <line x1="12" y1="22" x2="12" y2="6"/>
+      </symbol>
+
+      <!-- Walnut / nuts -->
+      <symbol id="ic-t-nut" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="8.5" cy="9" r="4.5"/>
+        <circle cx="15.5" cy="9" r="4.5"/>
+        <path d="M4 14h16a2 2 0 0 1 0 4H4a2 2 0 0 1 0-4z"/>
+      </symbol>
+
+      <!-- Tea mug / cup -->
+      <symbol id="ic-t-mug" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 8h1a4 4 0 0 1 0 8h-1"/>
+        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>
+        <line x1="6" y1="2" x2="6" y2="5"/>
+        <line x1="10" y1="2" x2="10" y2="5"/>
+        <line x1="14" y1="2" x2="14" y2="5"/>
+      </symbol>
+
+      <!-- Water droplet -->
+      <symbol id="ic-t-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+      </symbol>
+
+      <!-- Smile / laugh -->
+      <symbol id="ic-t-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M8 13s1.5 2 4 2 4-2 4-2"/>
+        <line x1="9" y1="9" x2="9.01" y2="9"/>
+        <line x1="15" y1="9" x2="15.01" y2="9"/>
+      </symbol>
+
+      <!-- Paintbrush / creative -->
+      <symbol id="ic-t-brush" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 17l4-4 3 3 5-5 3 3-8 7-7-4z"/>
+        <path d="M14.5 6.5l3 3"/>
+        <path d="M9.06 11.9l5.5-5.5a2 2 0 0 1 2.83 0l.21.21a2 2 0 0 1 0 2.83l-5.5 5.5"/>
+      </symbol>
+
+      <!-- Heart / cardiovascular -->
+      <symbol id="ic-t-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </symbol>
+
+      <!-- Blood sugar / health check -->
+      <symbol id="ic-t-health" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      </symbol>
+
+      <!-- Sound waves / hearing -->
+      <symbol id="ic-t-hearing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 8a2 2 0 0 0 0 8"/>
+        <path d="M5 5.5a6 6 0 0 0 0 13"/>
+        <path d="M9 3a9 9 0 0 0 0 18"/>
+      </symbol>
+
+      <!-- X inside circle / no-smoking / prohibition -->
+      <symbol id="ic-t-no" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </symbol>
+
+      <!-- Wine glass -->
+      <symbol id="ic-t-wine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 22h8"/>
+        <path d="M12 11v11"/>
+        <path d="M5 3l1.5 8A5 5 0 0 0 12 16a5 5 0 0 0 5.5-5L19 3z"/>
+      </symbol>
+
+      <!-- Meditation / zen circle -->
+      <symbol id="ic-t-zen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <circle cx="12" cy="12" r="3"/>
+      </symbol>
+
+    </defs>
+  </svg>
+
 </head>
 <body>
   <div class="app">
+
     <!-- Header -->
     <header class="header">
       <div class="header-inner">
-        <div class="logo">🧠 Brain Spark</div>
-        <div class="streak-badge" id="streakBadge">🔥 <span id="streakCount">0</span> day streak</div>
+        <div class="logo">
+          <span class="logo-icon ic">
+            <svg><use href="#ic-brain"/></svg>
+          </span>
+          Brain Spark
+        </div>
+        <div class="streak-badge" id="streakBadge">
+          <span class="streak-icon ic">
+            <svg><use href="#ic-flame"/></svg>
+          </span>
+          <span id="streakCount">0</span> day streak
+        </div>
       </div>
     </header>
+
+    <!-- Science strip -->
+    <div class="science-strip">
+      <span class="science-strip-dot"></span>
+      <span class="science-icon ic"><svg><use href="#ic-atom"/></svg></span>
+      Clinically validated &nbsp;·&nbsp; ACTIVE Trial 2026 &nbsp;·&nbsp; 25% dementia risk reduction
+    </div>
 
     <!-- Welcome Banner -->
     <section class="welcome-banner">
       <div class="welcome-text">
-        <h1>Good <span id="timeGreeting">day</span>! 👋</h1>
+        <h1>Good <span id="timeGreeting">day</span></h1>
         <p>5 minutes a day keeps your mind sharp. Ready to train?</p>
       </div>
       <div class="daily-progress">
@@ -37,16 +320,14 @@
       </div>
     </section>
 
-    <!-- Research callout -->
-    <div class="research-banner">
-      <span class="research-icon">📖</span>
-      <span><strong>Science-backed:</strong> A 2026 study found speed training cuts dementia risk by 25% over 20 years. These games are designed around that research.</span>
-    </div>
-
     <!-- Game Grid -->
     <section class="games-section">
+
       <a href="test.html" class="assess-btn">
-        🩺 Brain Health Check
+        <span style="display:flex;align-items:center;gap:8px;">
+          <span class="assess-icon ic"><svg><use href="#ic-pulse"/></svg></span>
+          Brain Health Check
+        </span>
         <span class="assess-btn-sub">Self-guided wellness check · 8 areas · ~20 min</span>
       </a>
 
@@ -54,7 +335,11 @@
       <div class="game-grid">
 
         <a href="games/quick-flash.html" class="game-card featured">
-          <div class="game-icon">⚡</div>
+          <div class="game-icon">
+            <div class="icon-box ic-cyan ic">
+              <svg><use href="#ic-bolt"/></svg>
+            </div>
+          </div>
           <div class="card-badge">Most Effective</div>
           <h3>Quick Flash</h3>
           <p>Spot the image before it disappears. Speed training backed by clinical research.</p>
@@ -65,7 +350,11 @@
         </a>
 
         <a href="games/memory-match.html" class="game-card">
-          <div class="game-icon">🃏</div>
+          <div class="game-icon">
+            <div class="icon-box ic-violet ic">
+              <svg><use href="#ic-cards"/></svg>
+            </div>
+          </div>
           <h3>Memory Match</h3>
           <p>Flip cards and find the matching pairs. Trains working memory.</p>
           <div class="game-meta">
@@ -75,7 +364,11 @@
         </a>
 
         <a href="games/word-scramble.html" class="game-card">
-          <div class="game-icon">📝</div>
+          <div class="game-icon">
+            <div class="icon-box ic-amber ic">
+              <svg><use href="#ic-shuffle"/></svg>
+            </div>
+          </div>
           <h3>Word Scramble</h3>
           <p>Unscramble the letters to reveal the hidden word. Exercises language skills.</p>
           <div class="game-meta">
@@ -85,7 +378,11 @@
         </a>
 
         <a href="games/number-sequence.html" class="game-card">
-          <div class="game-icon">🔢</div>
+          <div class="game-icon">
+            <div class="icon-box ic-blue ic">
+              <svg><use href="#ic-sequence"/></svg>
+            </div>
+          </div>
           <h3>Number Sequence</h3>
           <p>Remember and repeat growing number sequences. Builds short-term memory.</p>
           <div class="game-meta">
@@ -95,7 +392,11 @@
         </a>
 
         <a href="games/pattern-lights.html" class="game-card">
-          <div class="game-icon">🌈</div>
+          <div class="game-icon">
+            <div class="icon-box ic-green ic">
+              <svg><use href="#ic-grid"/></svg>
+            </div>
+          </div>
           <h3>Pattern Lights</h3>
           <p>Watch the light sequence and repeat it. Gets longer every round!</p>
           <div class="game-meta">
@@ -109,140 +410,140 @@
 
     <!-- Tips section -->
     <section class="tips-section">
-      <h2 class="section-title">💡 Science-Backed Brain Health Tips</h2>
+      <h2 class="section-title">Science-Backed Brain Health Tips</h2>
 
-      <div class="tips-category-label">🧠 Brain Training</div>
+      <div class="tips-category-label">Brain Training</div>
       <div class="tips-grid">
         <div class="tip-card">
-          <div class="tip-icon">⚡</div>
+          <div class="tip-icon ic-cyan ic"><svg><use href="#ic-t-bolt"/></svg></div>
           <p>Play <strong>Quick Flash</strong> daily — the ACTIVE trial found speed training cuts dementia risk by <strong>25% over 20 years</strong>.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🔁</div>
+          <div class="tip-icon ic-cyan ic"><svg><use href="#ic-t-refresh"/></svg></div>
           <p><strong>Booster sessions matter most</strong> — the 25% risk reduction only applied to people who returned for follow-up sessions. Consistency is key.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">📚</div>
+          <div class="tip-icon ic-cyan ic"><svg><use href="#ic-t-book"/></svg></div>
           <p><strong>Read every day</strong> — reading engages multiple brain networks at once. Fiction is especially good for empathy and social cognition.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🎵</div>
+          <div class="tip-icon ic-cyan ic"><svg><use href="#ic-t-music"/></svg></div>
           <p><strong>Learn a musical instrument</strong> or sing. Music engages more areas of the brain simultaneously than any other activity.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🗣️</div>
+          <div class="tip-icon ic-cyan ic"><svg><use href="#ic-t-users"/></svg></div>
           <p><strong>Stay socially active</strong> — regular conversation and social engagement are among the strongest protective factors against dementia.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">✏️</div>
+          <div class="tip-icon ic-cyan ic"><svg><use href="#ic-t-pen"/></svg></div>
           <p><strong>Learn something new</strong> — a language, a craft, a recipe. Novelty forces the brain to build new connections.</p>
         </div>
       </div>
 
-      <div class="tips-category-label">🏃 Physical Activity</div>
+      <div class="tips-category-label">Physical Activity</div>
       <div class="tips-grid">
         <div class="tip-card">
-          <div class="tip-icon">🚶</div>
+          <div class="tip-icon ic-green ic"><svg><use href="#ic-t-activity"/></svg></div>
           <p><strong>Walk 30 minutes a day</strong> — aerobic exercise increases blood flow to the brain and promotes growth of new brain cells (neurogenesis).</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">💪</div>
+          <div class="tip-icon ic-green ic"><svg><use href="#ic-t-dumbbell"/></svg></div>
           <p><strong>Strength training twice a week</strong> — a 2020 Lancet study found resistance exercise significantly reduces cognitive decline risk.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🧘</div>
+          <div class="tip-icon ic-green ic"><svg><use href="#ic-t-wind"/></svg></div>
           <p><strong>Try yoga or tai chi</strong> — these combine movement with focused attention and have been shown to reduce brain shrinkage in older adults.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">💃</div>
+          <div class="tip-icon ic-green ic"><svg><use href="#ic-t-music"/></svg></div>
           <p><strong>Dancing is especially powerful</strong> — it combines physical exercise, social interaction, and learning new patterns, all at once.</p>
         </div>
       </div>
 
-      <div class="tips-category-label">😴 Sleep & Rest</div>
+      <div class="tips-category-label">Sleep &amp; Rest</div>
       <div class="tips-grid">
         <div class="tip-card">
-          <div class="tip-icon">🌙</div>
+          <div class="tip-icon ic-blue ic"><svg><use href="#ic-t-moon"/></svg></div>
           <p>Aim for <strong>7–8 hours of sleep</strong>. During deep sleep, your brain flushes out toxic waste products including amyloid — a hallmark of Alzheimer's.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🛏️</div>
+          <div class="tip-icon ic-blue ic"><svg><use href="#ic-t-clock"/></svg></div>
           <p><strong>Keep a regular sleep schedule</strong> — going to bed and waking at the same time each day is more protective than just getting enough hours.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">📵</div>
+          <div class="tip-icon ic-blue ic"><svg><use href="#ic-t-screen-off"/></svg></div>
           <p><strong>No screens 1 hour before bed</strong> — blue light suppresses melatonin and disrupts the deep sleep your brain needs to self-clean.</p>
         </div>
       </div>
 
-      <div class="tips-category-label">🥦 Diet & Nutrition</div>
+      <div class="tips-category-label">Diet &amp; Nutrition</div>
       <div class="tips-grid">
         <div class="tip-card">
-          <div class="tip-icon">🫐</div>
+          <div class="tip-icon ic-violet ic"><svg><use href="#ic-t-berries"/></svg></div>
           <p><strong>Eat berries regularly</strong> — blueberries, strawberries and blackberries are rich in flavonoids linked to slower cognitive decline in large studies.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🐟</div>
+          <div class="tip-icon ic-violet ic"><svg><use href="#ic-t-fish"/></svg></div>
           <p><strong>Oily fish twice a week</strong> — omega-3 fatty acids (in salmon, mackerel, sardines) are essential for brain cell membrane health.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🫒</div>
+          <div class="tip-icon ic-violet ic"><svg><use href="#ic-t-leaf"/></svg></div>
           <p>Follow a <strong>Mediterranean-style diet</strong> — olive oil, nuts, legumes, vegetables and whole grains. The MIND diet reduces Alzheimer's risk by up to 53%.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🥜</div>
+          <div class="tip-icon ic-violet ic"><svg><use href="#ic-t-nut"/></svg></div>
           <p><strong>Eat nuts daily</strong> — a handful of walnuts in particular has been associated with better memory and brain function in older adults.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🍵</div>
+          <div class="tip-icon ic-violet ic"><svg><use href="#ic-t-mug"/></svg></div>
           <p><strong>Drink green tea</strong> — contains EGCG and L-theanine, which promote calm focus and may protect against plaque build-up in the brain.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">💧</div>
+          <div class="tip-icon ic-violet ic"><svg><use href="#ic-t-drop"/></svg></div>
           <p><strong>Stay hydrated</strong> — even mild dehydration impairs concentration and memory. The brain is 75% water. Aim for 6–8 glasses a day.</p>
         </div>
       </div>
 
-      <div class="tips-category-label">🧘 Stress & Mental Wellbeing</div>
+      <div class="tips-category-label">Stress &amp; Mental Wellbeing</div>
       <div class="tips-grid">
         <div class="tip-card">
-          <div class="tip-icon">🌬️</div>
+          <div class="tip-icon ic-amber ic"><svg><use href="#ic-t-wind"/></svg></div>
           <p><strong>Manage stress actively</strong> — chronic stress raises cortisol, which damages the hippocampus (your memory centre). Deep breathing helps immediately.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🧘</div>
+          <div class="tip-icon ic-amber ic"><svg><use href="#ic-t-zen"/></svg></div>
           <p><strong>Try mindfulness meditation</strong> — even 10 minutes a day has been shown in brain scans to increase grey matter density in memory-related regions.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">😄</div>
+          <div class="tip-icon ic-amber ic"><svg><use href="#ic-t-smile"/></svg></div>
           <p><strong>Laugh often</strong> — laughter reduces stress hormones and activates multiple brain regions. Humour is genuinely good medicine.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🎨</div>
+          <div class="tip-icon ic-amber ic"><svg><use href="#ic-t-brush"/></svg></div>
           <p><strong>Creative hobbies protect the brain</strong> — painting, knitting, pottery and writing all reduce dementia risk by building cognitive reserve.</p>
         </div>
       </div>
 
-      <div class="tips-category-label">🏥 Health Checks</div>
+      <div class="tips-category-label">Health Checks</div>
       <div class="tips-grid">
         <div class="tip-card">
-          <div class="tip-icon">❤️</div>
+          <div class="tip-icon ic-red ic"><svg><use href="#ic-t-heart"/></svg></div>
           <p><strong>Keep blood pressure in check</strong> — high blood pressure in midlife is one of the biggest modifiable risk factors for dementia. Ask your GP.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🩺</div>
+          <div class="tip-icon ic-red ic"><svg><use href="#ic-t-health"/></svg></div>
           <p><strong>Manage blood sugar</strong> — type 2 diabetes significantly increases dementia risk. A healthy diet and regular exercise are the best prevention.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">👂</div>
+          <div class="tip-icon ic-red ic"><svg><use href="#ic-t-hearing"/></svg></div>
           <p><strong>Treat hearing loss early</strong> — untreated hearing loss is one of the largest modifiable risk factors for dementia. Get a hearing test if unsure.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🚭</div>
+          <div class="tip-icon ic-red ic"><svg><use href="#ic-t-no"/></svg></div>
           <p><strong>Don't smoke</strong> — smoking doubles the risk of dementia by damaging blood vessels and reducing oxygen supply to the brain.</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon">🍷</div>
+          <div class="tip-icon ic-red ic"><svg><use href="#ic-t-wine"/></svg></div>
           <p><strong>Limit alcohol</strong> — even moderate drinking shrinks brain volume over time. The Lancet Commission on Dementia lists alcohol as a key risk factor.</p>
         </div>
       </div>
@@ -250,26 +551,24 @@
     </section>
 
     <footer class="footer">
-      <p>Made with ❤️ for keeping minds sharp · Based on the ACTIVE Trial research published in <em>Alzheimer's & Dementia</em>, 2026</p>
+      <p>Built for keeping minds sharp · Based on the ACTIVE Trial research published in <em>Alzheimer's &amp; Dementia</em>, 2026</p>
     </footer>
   </div>
 
   <script>
-    // Greeting
     const hour = new Date().getHours();
     const greet = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
     document.getElementById('timeGreeting').textContent = greet;
 
-    // Streak & progress from localStorage
     const today = new Date().toDateString();
     let stats = JSON.parse(localStorage.getItem('brainSpark') || '{}');
-    if (!stats.lastDate) stats = { streak: 0, lastDate: '', gamesPlayed: 0, totalSessions: 0 };
+    if (!stats.lastDate) stats = { streak: 0, lastDate: '', gamesPlayed: 0 };
 
     if (stats.lastDate !== today) {
       const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
       if (stats.lastDate === yesterday.toDateString()) {
         stats.streak = (stats.streak || 0) + 1;
-      } else if (stats.lastDate !== today) {
+      } else {
         stats.streak = 1;
       }
       stats.gamesPlayed = 0;
@@ -280,8 +579,7 @@
     document.getElementById('streakCount').textContent = stats.streak || 0;
     const gp = Math.min(stats.gamesPlayed || 0, 3);
     document.getElementById('gamesPlayed').textContent = gp;
-    const offset = 201 - (201 * gp / 3);
-    document.getElementById('progressRing').style.strokeDashoffset = offset;
+    document.getElementById('progressRing').style.strokeDashoffset = 201 - (201 * gp / 3);
   </script>
 </body>
 </html>

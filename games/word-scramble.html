@@ -5,125 +5,125 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Word Scramble – Brain Spark</title>
   <link rel="stylesheet" href="../style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* Per-word countdown timer */
     .word-timer-bar {
-      height: 14px; border-radius: 14px;
-      background: #e0dcff; overflow: hidden; margin-bottom: 14px;
+      height: 8px; border-radius: 8px;
+      background: var(--border-2); overflow: hidden; margin-bottom: 13px;
     }
     .word-timer-fill {
-      height: 100%; border-radius: 14px;
-      background: linear-gradient(90deg,#43c59e,#6c63ff);
+      height: 100%; border-radius: 8px;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
       transition: width 0.25s linear, background 0.4s;
     }
-    .word-timer-fill.urgent { background: linear-gradient(90deg,#ff6584,#f4845f); }
+    .word-timer-fill.urgent { background: linear-gradient(90deg, var(--red), var(--orange)); }
 
-    /* Difficulty stars */
-    .diff-stars { text-align:center; font-size:1.1rem; margin-bottom:6px; letter-spacing:2px; }
+    .diff-stars { text-align:center; font-size:1rem; margin-bottom:6px; letter-spacing:3px; color: var(--amber); }
 
-    /* Category + hint */
-    .cat-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .cat-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:9px; }
     .category-tag {
-      background:#ede9ff; color:#6c63ff; border-radius:50px;
-      padding:4px 14px; font-size:0.8rem; font-weight:700;
-      text-transform:uppercase; letter-spacing:0.5px;
+      background: var(--violet-dim); color: #a78bfa;
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius:50px;
+      padding:4px 13px; font-size:0.74rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.6px;
     }
 
-    /* Answer slots */
     .answer-slots {
       display:flex; flex-wrap:wrap; justify-content:center;
-      gap:7px; min-height:62px; margin-bottom:14px;
-      border:2px dashed #c8c2ff; border-radius:16px; padding:8px;
+      gap:7px; min-height:62px; margin-bottom:13px;
+      border:1px dashed var(--border-2); border-radius:14px; padding:8px;
       align-items:center;
     }
     .slot {
-      width:46px; height:54px;
-      background:white; border:2px solid #6c63ff;
-      border-radius:11px; display:flex; align-items:center;
-      justify-content:center; font-size:1.4rem; font-weight:900;
-      color:#2d2b4e; cursor:pointer; transition:transform 0.12s;
+      width:44px; height:52px;
+      background: var(--surface-2); border:1px solid var(--violet);
+      border-radius:10px; display:flex; align-items:center;
+      justify-content:center; font-size:1.35rem; font-weight:800;
+      color: var(--text); cursor:pointer; transition:transform 0.12s;
       position:relative;
+      font-family: 'Space Grotesk', sans-serif;
     }
     .slot:active { transform:scale(0.9); }
-    .slot.empty { border-style:dashed; color:#c8c2ff; font-size:1rem; }
-    .slot.correct { background:#d4f7e9; border-color:#43c59e; animation:popUp 0.3s; }
-    .slot.wrong   { background:#fde0e0; border-color:#ff6584; animation:slotShake 0.4s; }
+    .slot.empty { border-style:dashed; border-color:var(--border-2); color:var(--text-3); font-size:0.9rem; }
+    .slot.correct { background: var(--green-dim); border-color: var(--green); animation:popUp 0.3s; }
+    .slot.wrong   { background: var(--red-dim);   border-color: var(--red);   animation:slotShake 0.4s; }
     @keyframes popUp    { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
     @keyframes slotShake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
-    /* Letter pool */
     .letter-pool {
-      display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:16px;
+      display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:14px;
     }
     .letter-tile {
-      width:50px; height:58px;
-      background:linear-gradient(135deg,#6c63ff,#9b8fff);
-      color:white; border-radius:13px;
-      font-size:1.5rem; font-weight:900;
+      width:48px; height:56px;
+      background: linear-gradient(135deg, var(--violet), var(--blue));
+      color:white; border-radius:12px;
+      font-size:1.45rem; font-weight:800;
       display:flex; align-items:center; justify-content:center;
       cursor:pointer; transition:transform 0.12s, opacity 0.15s;
-      box-shadow:0 3px 10px rgba(108,99,255,0.3);
+      box-shadow: 0 4px 14px rgba(139,92,246,0.3);
       user-select:none;
+      font-family: 'Space Grotesk', sans-serif;
     }
     .letter-tile:active { transform:scale(0.88); }
-    .letter-tile.used { opacity:0.2; pointer-events:none; }
+    .letter-tile.used { opacity:0.18; pointer-events:none; }
 
-    /* Speed bonus flash */
     .speed-badge {
-      position:fixed; top:80px; left:50%; transform:translateX(-50%);
-      background:linear-gradient(135deg,#ffd166,#f4845f);
-      color:white; padding:8px 22px; border-radius:50px;
-      font-weight:900; font-size:1rem;
+      position:fixed; top:65px; left:50%; transform:translateX(-50%);
+      background: linear-gradient(135deg, var(--amber), var(--orange));
+      color:white; padding:7px 20px; border-radius:50px;
+      font-weight:800; font-size:0.92rem;
       opacity:0; pointer-events:none; z-index:200;
-      transition:opacity 0.2s;
+      font-family: 'Space Grotesk', sans-serif;
     }
     .speed-badge.show { opacity:1; animation:floatUp 1s forwards; }
     @keyframes floatUp { 0%{opacity:1;transform:translateX(-50%) translateY(0)} 100%{opacity:0;transform:translateX(-50%) translateY(-30px)} }
 
-    /* Progress bar */
     .progress-dots {
-      display:flex; justify-content:center; gap:7px; margin-bottom:16px; flex-wrap:wrap;
+      display:flex; justify-content:center; gap:6px; margin-bottom:14px; flex-wrap:wrap;
     }
-    .dot { width:11px; height:11px; border-radius:50%; background:#e0dcff; transition:background 0.3s; }
-    .dot.done { background:#43c59e; }
-    .dot.current { background:#6c63ff; transform:scale(1.2); }
-    .dot.failed { background:#ff6584; }
+    .dot { width:10px; height:10px; border-radius:50%; background:var(--border-2); transition:background 0.3s; }
+    .dot.done    { background: var(--green); }
+    .dot.current { background: var(--violet); transform:scale(1.2); }
+    .dot.failed  { background: var(--red); }
 
     .word-actions { display:flex; gap:8px; }
     .secondary-btn {
-      padding:14px 16px; border:2px solid #e0dcff; border-radius:14px;
-      background:white; font-family:'Nunito',sans-serif; font-weight:700;
-      font-size:0.95rem; cursor:pointer; color:#7b78a8; transition:all 0.15s; flex-shrink:0;
+      padding:13px 15px; border:1px solid var(--border-2); border-radius:12px;
+      background: var(--surface); font-family:'Inter',sans-serif; font-weight:600;
+      font-size:0.9rem; cursor:pointer; color:var(--text-2); transition:all 0.15s; flex-shrink:0;
     }
-    .secondary-btn:active { background:#ede9ff; }
+    .secondary-btn:hover  { border-color: var(--violet); color: var(--text); }
+    .secondary-btn:active { background: var(--violet-dim); }
   </style>
 </head>
 <body>
 <div class="game-page">
   <div class="game-header">
-    <a href="../index.html" class="back-btn">←</a>
-    <span class="game-title">📝 Word Scramble</span>
+    <a href="../index.html" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <span class="game-title">Word Scramble</span>
     <span class="game-score-header" id="headerScore">0 pts</span>
   </div>
 
   <div class="game-body">
     <div id="introScreen">
       <div class="instruction-card">
-        <div style="font-size:3rem;margin-bottom:10px;">📝</div>
+        <div style="margin-bottom:16px;display:flex;justify-content:center;"><div class="icon-box ic-amber ic" style="width:64px;height:64px;border-radius:18px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg></div></div>
         <strong>How to play:</strong><br><br>
         Tap letters in the correct order.<br>
         Each word has a <strong>countdown timer</strong> — faster = more points!<br><br>
-        ⭐ <strong>Speed bonus</strong>: solve in first half of time = 2× points<br>
-        💡 <strong>Hints</strong>: reveal one letter (costs 5 pts)<br>
-        🔥 Words get <strong>longer and harder</strong> as you go<br><br>
-        <em style="font-size:0.85rem;color:#7b78a8;">Exercises language centres, verbal memory, and pattern recognition.</em>
+        <span style="color:var(--amber)">2×</span> <strong>Speed bonus</strong>: solve in first half of time = double points<br>
+        <span style="color:var(--cyan)">?</span> <strong>Hints</strong>: reveal one letter (costs 5 pts)<br>
+        <span style="color:var(--orange)">↑</span> Words get <strong>longer and harder</strong> as you go<br><br>
+        <em style="font-size:0.85rem;color:var(--text-3);">Exercises language centres, verbal memory, and pattern recognition.</em>
       </div>
       <div class="score-bar">
         <div class="score-item"><div class="score-num" id="bestScoreWS">0</div><div class="score-label">Best Score</div></div>
         <div class="score-item"><div class="score-num" id="totalWS">0</div><div class="score-label">Sessions</div></div>
       </div>
-      <button class="big-btn" onclick="startGame()">Start Scrambling 📝</button>
+      <button class="big-btn" onclick="startGame()">Start Scrambling</button>
     </div>
 
     <div id="gameScreen" style="display:none;">
@@ -138,7 +138,7 @@
       <div class="diff-stars" id="diffStars">★☆☆</div>
       <div class="cat-row">
         <div class="category-tag" id="categoryTag">Nature</div>
-        <div id="hintCount" style="font-size:0.8rem;color:#7b78a8;font-weight:700;">💡 Hint (×3)</div>
+        <div id="hintCount" style="font-size:0.8rem;color:var(--text-3);font-weight:700;">Hint (×3)</div>
       </div>
 
       <div class="answer-slots" id="answerSlots"></div>
@@ -147,12 +147,12 @@
       <div class="word-actions">
         <button class="secondary-btn" onclick="clearAnswer()">↩ Clear</button>
         <button class="big-btn" style="flex:1;margin:0;" id="checkBtn" onclick="checkAnswer()">Check ✓</button>
-        <button class="secondary-btn" onclick="useHint()">💡</button>
+        <button class="secondary-btn" onclick="useHint()" title="Hint"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg></button>
       </div>
     </div>
   </div>
 
-  <div class="speed-badge" id="speedBadge">⚡ Speed Bonus! ×2</div>
+  <div class="speed-badge" id="speedBadge">Speed Bonus! ×2</div>
 
   <div class="result-overlay" id="resultOverlay">
     <div class="result-box">
@@ -161,7 +161,7 @@
       <p id="resultMsg"></p>
       <div class="result-actions">
         <button class="big-btn" onclick="startGame()">Play Again</button>
-        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home</a>
       </div>
     </div>
   </div>
@@ -276,7 +276,7 @@ function loadWord(){
 
   document.getElementById('categoryTag').textContent=entry.category;
   document.getElementById('wordNumWS').textContent=(wordIdx+1)+'/'+gameWords.length;
-  document.getElementById('hintCount').textContent='💡 Hint (×'+hintCount+')';
+  document.getElementById('hintCount').textContent='Hint (×'+hintCount+')';
   document.getElementById('diffStars').textContent=entry.diff===1?'★☆☆':entry.diff===2?'★★☆':'★★★';
 
   timeLeft=TIME_PER_WORD[entry.diff-1];
@@ -413,7 +413,7 @@ function useHint(){
   if(srcIdx===-1)return;
   hintCount--;
   score=Math.max(0,score-5);
-  document.getElementById('hintCount').textContent='💡 Hint (×'+hintCount+')';
+  document.getElementById('hintCount').textContent='Hint (×'+hintCount+')';
   document.getElementById('scoreWS').textContent=score;
   usedIndices.push(srcIdx);
   answerLetters.push({letter:correctLetter,srcIdx});
@@ -423,7 +423,7 @@ function useHint(){
 
 function showSpeedBadge(pts){
   const b=document.getElementById('speedBadge');
-  b.textContent='⚡ Speed Bonus! +'+pts+' pts';
+  b.textContent='Speed Bonus! +'+pts+' pts';
   b.classList.remove('show');
   void b.offsetWidth;
   b.classList.add('show');

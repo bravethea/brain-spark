@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Pattern Lights – Brain Spark</title>
   <link rel="stylesheet" href="../style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* 4x4 grid */
     .lights-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -76,87 +77,87 @@
     .l14 { background: #c0392b; }
     .l15 { background: #2980b9; }
 
-    /* Status */
     .status-msg {
-      text-align: center; font-size: 1.05rem; font-weight: 800;
-      color: #2d2b4e; margin-bottom: 12px; min-height: 1.5em;
+      text-align: center; font-size: 1rem; font-weight: 700;
+      color: var(--text); margin-bottom: 11px; min-height: 1.5em;
+      font-family: 'Space Grotesk', sans-serif;
     }
 
-    /* Mode banner */
     .mode-pill {
-      display: inline-block; padding: 5px 16px; border-radius: 50px;
-      font-size: 0.8rem; font-weight: 800; margin-bottom: 12px;
+      display: inline-block; padding: 5px 15px; border-radius: 50px;
+      font-size: 0.76rem; font-weight: 700; margin-bottom: 11px;
+      letter-spacing: 0.3px;
     }
-    .m-normal  { background: #ede9ff; color: #6c63ff; }
-    .m-ghost   { background: #1a1a2e; color: #e0d7ff; }
-    .m-double  { background: #fff3cd; color: #7a5200; }
-    .m-reverse { background: #fde0e0; color: #8b1a1a; }
-    .m-dark    { background: #222; color: #aaa; }
+    .m-normal  { background: var(--violet-dim); color: #a78bfa; }
+    .m-ghost   { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+    .m-double  { background: var(--amber-dim); color: #fbbf24; }
+    .m-reverse { background: var(--red-dim); color: #f87171; }
+    .m-dark    { background: var(--surface-3); color: var(--text-3); }
 
     .mode-area { text-align: center; }
 
-    /* Progress bar */
     .round-track {
       display: flex; gap: 4px; justify-content: center;
-      flex-wrap: wrap; margin-bottom: 14px;
+      flex-wrap: wrap; margin-bottom: 13px;
     }
     .rt-seg {
-      height: 8px; width: 18px; border-radius: 4px;
-      background: #e0dcff; transition: background 0.3s;
+      height: 7px; width: 17px; border-radius: 4px;
+      background: var(--border-2); transition: background 0.3s;
     }
-    .rt-seg.done   { background: #43c59e; }
-    .rt-seg.active { background: #6c63ff; }
-    .rt-seg.fail   { background: #ff6584; }
+    .rt-seg.done   { background: var(--green); }
+    .rt-seg.active { background: var(--violet); }
+    .rt-seg.fail   { background: var(--red); }
 
-    /* Step indicator */
     .step-info {
-      text-align: center; font-size: 0.82rem;
-      color: #7b78a8; font-weight: 700; margin-bottom: 10px;
+      text-align: center; font-size: 0.78rem;
+      color: var(--text-3); font-weight: 600; margin-bottom: 9px;
     }
 
-    /* Mode announce */
     .mode-announce {
-      position:fixed; inset:0; background:rgba(45,43,78,0.75);
+      position:fixed; inset:0; background:rgba(7,8,15,0.82);
+      backdrop-filter:blur(8px);
       z-index:300; display:none; align-items:center; justify-content:center;
     }
     .mode-announce.show { display:flex; }
     .mode-card {
-      background:white; border-radius:24px; padding:32px 28px;
+      background: var(--surface-2); border: 1px solid var(--border-2);
+      border-radius:22px; padding:32px 28px;
       text-align:center; max-width:300px; width:88%;
       animation:popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
     }
     @keyframes popIn { from{transform:scale(0.6);opacity:0} to{transform:scale(1);opacity:1} }
     .mode-card .m-icon { font-size:3.5rem; margin-bottom:10px; }
-    .mode-card h3 { font-size:1.4rem; font-weight:900; margin-bottom:8px; }
-    .mode-card p  { color:#7b78a8; font-size:0.95rem; margin-bottom:20px; }
+    .mode-card h3 { font-size:1.35rem; font-weight:800; margin-bottom:8px; font-family:'Space Grotesk',sans-serif; color:var(--text); }
+    .mode-card p  { color:var(--text-2); font-size:0.9rem; margin-bottom:18px; line-height:1.55; }
   </style>
 </head>
 <body>
 <div class="game-page">
   <div class="game-header">
-    <a href="../index.html" class="back-btn">←</a>
-    <span class="game-title">🌈 Pattern Lights</span>
+    <a href="../index.html" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <span class="game-title">Pattern Lights</span>
     <span class="game-score-header" id="headerScore">Round 1</span>
   </div>
 
   <div class="game-body">
     <div id="introScreen">
       <div class="instruction-card">
-        <div style="font-size:3rem;margin-bottom:10px;">🌈</div>
+        <div style="margin-bottom:16px;display:flex;justify-content:center;"><div class="icon-box ic-green ic" style="width:64px;height:64px;border-radius:18px;"><svg width="32" height="32" viewBox="0 0 24 24"><circle cx="7" cy="7" r="3.5" fill="currentColor"/><circle cx="17" cy="7" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="7" cy="17" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17" cy="17" r="3.5" fill="currentColor"/></svg></div></div>
         <strong>How to play:</strong><br><br>
         Watch the 4×4 grid of coloured lights flash in a sequence.<br>
         Then tap them in the same order!<br><br>
         New challenges as you progress:<br>
-        👻 <strong>Ghost</strong> — lights flash for only 200ms<br>
-        ✌️ <strong>Double</strong> — two lights flash at once<br>
-        🔀 <strong>Reverse</strong> — tap in reverse order<br><br>
-        <em style="font-size:0.85rem;color:#7b78a8;">Trains visual memory, attention, and sequence processing.</em>
+        <span style="color:var(--text-3)">◈</span> <strong>Ghost</strong> — lights flash for only 200ms<br>
+        <span style="color:var(--text-3)">◈</span> <strong>Double</strong> — two lights flash at once<br>
+        <span style="color:var(--text-3)">◈</span> <strong>Reverse</strong> — tap in reverse order<br><br>
+        <em style="font-size:0.85rem;color:var(--text-3);">Trains visual memory, attention, and sequence processing.</em>
       </div>
       <div class="score-bar">
         <div class="score-item"><div class="score-num" id="bestRound">1</div><div class="score-label">Best Round</div></div>
         <div class="score-item"><div class="score-num" id="totalPL">0</div><div class="score-label">Sessions</div></div>
       </div>
-      <button class="big-btn" onclick="startGame()">Start Playing 🌈</button>
+      <button class="big-btn" onclick="startGame()">Start Playing</button>
     </div>
 
     <div id="gameScreen" style="display:none;">
@@ -169,7 +170,7 @@
       <div class="round-track" id="roundTrack"></div>
 
       <div class="mode-area">
-        <span class="mode-pill m-normal" id="modePill">⚡ Normal Mode</span>
+        <span class="mode-pill m-normal" id="modePill">Normal Mode</span>
       </div>
       <div class="status-msg" id="statusMsg">Watch the lights…</div>
       <div class="step-info" id="stepInfo"></div>
@@ -181,7 +182,7 @@
   <!-- Mode announce -->
   <div class="mode-announce" id="modeAnnounce">
     <div class="mode-card">
-      <div class="m-icon" id="modeAnIcon">👻</div>
+      <div class="m-icon" id="modeAnIcon">◈</div>
       <h3 id="modeAnTitle">Ghost Mode!</h3>
       <p id="modeAnDesc">Lights flash for only 200ms — stay sharp!</p>
       <button class="big-btn" onclick="dismissMode()">Ready!</button>
@@ -195,7 +196,7 @@
       <p id="resultMsg"></p>
       <div class="result-actions">
         <button class="big-btn" onclick="startGame()">Play Again</button>
-        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home</a>
       </div>
     </div>
   </div>
@@ -323,9 +324,9 @@ function nextRound(){
 }
 
 const MODE_INFO={
-  ghost: {icon:'👻',title:'Ghost Mode!',desc:'Lights now flash for only 200ms. Blink and you\'ll miss it!',pill:'m-ghost',label:'👻 Ghost Mode'},
-  double:{icon:'✌️',title:'Double Mode!',desc:'Two lights flash simultaneously. Remember BOTH!',pill:'m-double',label:'✌️ Double Mode'},
-  reverse:{icon:'🔀',title:'Reverse Mode!',desc:'Tap the sequence BACKWARDS — from last to first.',pill:'m-reverse',label:'🔀 Reverse Mode'},
+  ghost: {icon:'◈',title:'Ghost Mode!',desc:'Lights now flash for only 200ms. Blink and you\'ll miss it!',pill:'m-ghost',label:'Ghost Mode'},
+  double:{icon:'◈',title:'Double Mode!',desc:'Two lights flash simultaneously. Remember BOTH!',pill:'m-double',label:'Double Mode'},
+  reverse:{icon:'↺',title:'Reverse Mode!',desc:'Tap the sequence BACKWARDS — from last to first.',pill:'m-reverse',label:'Reverse Mode'},
 };
 
 function updateModeUI(){
@@ -336,7 +337,7 @@ function updateModeUI(){
     pill.textContent=info.label;
   } else {
     pill.className='mode-pill m-normal';
-    pill.textContent='⚡ Normal Mode';
+    pill.textContent='Normal Mode';
   }
 }
 
@@ -363,7 +364,7 @@ function flashLight(idx,dur,cb){
 
 function playSequence(){
   canInput=false;
-  setStatus('👁️ Watch carefully…');
+  setStatus('Watch carefully…');
   document.getElementById('stepInfo').textContent='';
 
   const dur=flashDuration(round,mode);
@@ -401,7 +402,7 @@ function playSequence(){
 
 function afterSequence(){
   canInput=true;
-  const hint=mode==='reverse'?'🔀 Tap BACKWARDS!':'🎯 Your turn!';
+  const hint=mode==='reverse'?'↺ Tap BACKWARDS!':'Your turn!';
   setStatus(hint);
   updateStepInfo();
 }
@@ -421,7 +422,7 @@ function userTap(idx,evt){
     if(userStep===pattern.length){
       canInput=false;
       roundSegStates[round-1]='done';
-      setStatus('✅ Perfect!');
+      setStatus('Perfect!');
       setTimeout(nextRound,700);
     }
   } else {
@@ -429,7 +430,7 @@ function userTap(idx,evt){
     document.getElementById('light_'+idx).classList.add('wrong-shake');
     lives--;
     roundSegStates[round-1]='fail';
-    setStatus('❌ Wrong! The next was light #'+(expected+1));
+    setStatus('Wrong! The next was light #'+(expected+1));
     updateUI();
     updateRoundTrack();
     setTimeout(()=>{

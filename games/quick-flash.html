@@ -5,24 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Quick Flash – Brain Spark</title>
   <link rel="stylesheet" href="../style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     .flash-arena {
-      background: white;
-      border-radius: 20px;
-      padding: 16px;
-      box-shadow: 0 4px 24px rgba(108,99,255,0.10);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
     }
     .flash-scene {
       position: relative;
       width: 100%;
       height: 200px;
       background: linear-gradient(160deg, #87ceeb 0%, #b8e4d8 60%, #8fbc8f 100%);
-      border-radius: 16px;
+      border-radius: 13px;
       overflow: hidden;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    /* Targets can appear anywhere in the scene */
     .flash-object {
       position: absolute;
       font-size: 3.5rem;
@@ -33,7 +34,6 @@
     }
     .flash-object.hidden { opacity: 0; }
 
-    /* Distractors - static noise objects in scene */
     .noise-obj {
       position: absolute;
       font-size: 1.4rem;
@@ -42,68 +42,65 @@
       user-select: none;
     }
 
-    /* Mode banner */
     .mode-banner {
       text-align: center;
-      font-size: 0.85rem;
-      font-weight: 800;
+      font-size: 0.8rem;
+      font-weight: 700;
       padding: 7px 0;
-      border-radius: 10px;
-      margin-bottom: 12px;
-      letter-spacing: 0.3px;
+      border-radius: 9px;
+      margin-bottom: 11px;
+      letter-spacing: 0.4px;
+      font-family: 'Space Grotesk', sans-serif;
     }
-    .mode-normal  { background: #ede9ff; color: #6c63ff; }
-    .mode-double  { background: #fff3cd; color: #7a5200; }
-    .mode-ghost   { background: #1a1a2e; color: #e0d7ff; }
-    .mode-reverse { background: #fde0e0; color: #8b1a1a; }
+    .mode-normal  { background: var(--violet-dim); color: #a78bfa; }
+    .mode-double  { background: var(--amber-dim);  color: #fbbf24; }
+    .mode-ghost   { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+    .mode-reverse { background: var(--red-dim);    color: #f87171; }
 
-    /* Choices */
     .choice-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 9px;
+      margin-bottom: 8px;
     }
     .choice-grid.six { grid-template-columns: repeat(3, 1fr); }
     .choice-btn {
       aspect-ratio: 1;
-      border: 3px solid #e0dcff;
-      border-radius: 14px;
-      background: white;
+      border: 2px solid var(--border-2);
+      border-radius: 13px;
+      background: var(--surface);
       font-size: 2rem;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: transform 0.12s, border-color 0.12s, background 0.12s;
       position: relative;
-      box-shadow: 0 2px 8px rgba(108,99,255,0.07);
     }
     .choice-btn:active { transform: scale(0.9); }
-    .choice-btn.selected  { border-color: #6c63ff; background: #ede9ff; }
-    .choice-btn.correct   { border-color: #43c59e; background: #d4f7e9; animation: popCorrect 0.35s; }
-    .choice-btn.wrong     { border-color: #ff6584; background: #fde0e0; animation: shake 0.4s; }
-    .choice-btn.missed    { border-color: #ffd166; background: #fff8e1; }
+    .choice-btn.selected  { border-color: var(--violet); background: var(--violet-dim); }
+    .choice-btn.correct   { border-color: var(--green);  background: var(--green-dim);  animation: popCorrect 0.35s; }
+    .choice-btn.wrong     { border-color: var(--red);    background: var(--red-dim);    animation: shake 0.4s; }
+    .choice-btn.missed    { border-color: var(--amber);  background: var(--amber-dim); }
     @keyframes popCorrect { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
     @keyframes shake      { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
-    /* Combo */
     .combo-bar {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 11px;
     }
-    .combo-label { font-size: 0.8rem; font-weight: 700; color: #7b78a8; min-width: 50px; }
+    .combo-label { font-size: 0.76rem; font-weight: 600; color: var(--text-3); min-width: 50px; }
     .combo-track {
-      flex: 1; height: 8px; background: #e0dcff; border-radius: 8px; overflow: hidden;
+      flex: 1; height: 6px; background: var(--border-2); border-radius: 6px; overflow: hidden;
     }
     .combo-fill {
-      height: 100%; border-radius: 8px;
-      background: linear-gradient(90deg, #43c59e, #6c63ff);
+      height: 100%; border-radius: 6px;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
       transition: width 0.3s;
     }
     .combo-x {
-      font-size: 0.95rem; font-weight: 900; color: #6c63ff;
+      font-size: 0.9rem; font-weight: 800; color: var(--cyan);
       min-width: 30px; text-align: right;
+      font-family: 'Space Grotesk', sans-serif;
     }
 
-    /* Flash countdown ring */
     .flash-timer-ring {
       position: absolute; top: 8px; right: 8px;
       width: 36px; height: 36px;
@@ -113,22 +110,22 @@
                stroke-dasharray: 88; stroke-dashoffset: 88;
                transition: stroke-dashoffset 0.05s linear; transform: rotate(-90deg); transform-origin: 50% 50%; }
 
-    /* Combo popup */
     .combo-popup {
-      position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-      font-size: 1.5rem; font-weight: 900; color: white;
-      background: linear-gradient(135deg, #6c63ff, #ff6584);
-      padding: 8px 22px; border-radius: 50px;
+      position: fixed; top: 65px; left: 50%; transform: translateX(-50%);
+      font-size: 1.4rem; font-weight: 800; color: white;
+      background: linear-gradient(135deg, var(--violet), var(--blue));
+      padding: 7px 20px; border-radius: 50px;
       pointer-events: none; z-index: 200;
       opacity: 0; transition: opacity 0.25s;
+      font-family: 'Space Grotesk', sans-serif;
     }
     .combo-popup.show { opacity: 1; animation: comboFloat 0.9s forwards; }
     @keyframes comboFloat { 0%{transform:translateX(-50%) translateY(0);opacity:1} 100%{transform:translateX(-50%) translateY(-30px);opacity:0} }
 
     .double-note {
       position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-      background: rgba(0,0,0,0.5); color: white;
-      font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 50px;
+      background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.9);
+      font-size: 0.72rem; font-weight: 700; padding: 4px 12px; border-radius: 50px;
       white-space: nowrap;
     }
   </style>
@@ -136,8 +133,8 @@
 <body>
 <div class="game-page">
   <div class="game-header">
-    <a href="../index.html" class="back-btn">←</a>
-    <span class="game-title">⚡ Quick Flash</span>
+    <a href="../index.html" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <span class="game-title">Quick Flash</span>
     <span class="game-score-header" id="headerScore">0 pts</span>
   </div>
 
@@ -145,20 +142,20 @@
     <!-- INTRO -->
     <div id="introScreen">
       <div class="instruction-card">
-        <div style="font-size:3rem;margin-bottom:10px;">⚡</div>
+        <div style="margin-bottom:16px;display:flex;justify-content:center;"><div class="icon-box ic-cyan ic" style="width:64px;height:64px;border-radius:18px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L14 2z"/></svg></div></div>
         <strong>How to play:</strong><br><br>
         Objects flash briefly — sometimes in different spots, sometimes two at once!<br>
         Tap <em>all</em> the objects you saw.<br><br>
         Build a <strong>combo streak</strong> for bonus points.<br>
         Special rounds: <strong>Ghost</strong> (ultra-fast), <strong>Double</strong> (spot two), <strong>Reverse</strong> (pick what you <em>didn't</em> see).<br><br>
-        <em style="font-size:0.85rem;color:#7b78a8;">Based on the ACTIVE trial — speed training cuts dementia risk by 25% over 20 years.</em>
+        <em style="font-size:0.85rem;color:var(--text-3);">Based on the ACTIVE trial — speed training cuts dementia risk by 25% over 20 years.</em>
       </div>
       <div class="score-bar">
         <div class="score-item"><div class="score-num" id="bestScore">0</div><div class="score-label">Best Score</div></div>
         <div class="score-item"><div class="score-num" id="bestCombo">0</div><div class="score-label">Best Combo</div></div>
         <div class="score-item"><div class="score-num" id="totalPlayed">0</div><div class="score-label">Sessions</div></div>
       </div>
-      <button class="big-btn" onclick="startGame()">Start Training ⚡</button>
+      <button class="big-btn" onclick="startGame()">Start Training</button>
     </div>
 
     <!-- GAME -->
@@ -173,7 +170,7 @@
         <div class="combo-track"><div class="combo-fill" id="comboFill" style="width:0%"></div></div>
         <span class="combo-x" id="comboLabel">×1</span>
       </div>
-      <div class="mode-banner mode-normal" id="modeBanner">⚡ Speed Mode</div>
+      <div class="mode-banner mode-normal" id="modeBanner">Speed Mode</div>
       <div class="flash-arena">
         <div class="flash-scene" id="flashScene">
           <svg class="flash-timer-ring" viewBox="0 0 36 36">
@@ -195,7 +192,7 @@
       <p id="resultMsg"></p>
       <div class="result-actions">
         <button class="big-btn" onclick="startGame()">Play Again</button>
-        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home</a>
       </div>
     </div>
   </div>
@@ -320,19 +317,19 @@ function buildSceneNoise(n){
   if(mode==='double'){
     const note=document.createElement('div');
     note.className='double-note';
-    note.textContent='⚡ TWO objects hidden — find both!';
+    note.textContent='TWO objects hidden — find both!';
     scene.appendChild(note);
   }
   if(mode==='ghost'){
     const note=document.createElement('div');
     note.className='double-note';
-    note.textContent='👻 Ghost mode — ultra fast!';
+    note.textContent='Ghost mode — ultra fast!';
     scene.appendChild(note);
   }
   if(mode==='reverse'){
     const note=document.createElement('div');
     note.className='double-note';
-    note.textContent='🔀 Reverse — pick what you did NOT see!';
+    note.textContent='Reverse — pick what you did NOT see!';
     scene.appendChild(note);
   }
 }
@@ -428,10 +425,10 @@ function updateUI(){
 function updateModeBanner(){
   const b=document.getElementById('modeBanner');
   const map={
-    normal:['mode-normal','⚡ Speed Mode'],
-    double:['mode-double','✌️ Double Mode — spot TWO!'],
-    ghost: ['mode-ghost','👻 Ghost Mode — blink and miss it!'],
-    reverse:['mode-reverse','🔀 Reverse — pick what you did NOT see!']
+    normal:['mode-normal','Speed Mode'],
+    double:['mode-double','Double Mode — spot TWO!'],
+    ghost: ['mode-ghost','Ghost Mode — blink and miss it!'],
+    reverse:['mode-reverse','Reverse — pick what you did NOT see!']
   };
   b.className='mode-banner '+map[mode][0];
   b.textContent=map[mode][1];

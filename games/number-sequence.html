@@ -5,131 +5,135 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Number Sequence – Brain Spark</title>
   <link rel="stylesheet" href="../style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* Big display */
     .display-box {
-      border-radius: 20px;
+      border-radius: 18px;
       padding: 22px 16px;
       text-align: center;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       min-height: 110px;
       display: flex; align-items: center; justify-content: center;
       flex-direction: column;
       position: relative; overflow: hidden;
+      border: 1px solid var(--border-2);
     }
-    .display-box.normal   { background: linear-gradient(135deg,#2d2b4e,#4a4580); }
-    .display-box.reverse  { background: linear-gradient(135deg,#8b1a1a,#c0392b); }
-    .display-box.math     { background: linear-gradient(135deg,#1a5276,#2980b9); }
-    .display-box.missing  { background: linear-gradient(135deg,#1a4731,#27ae60); }
+    .display-box.normal  { background: linear-gradient(135deg, #0f1f40, #162a55); }
+    .display-box.reverse { background: linear-gradient(135deg, #3b0a0a, #6b1212); }
+    .display-box.math    { background: linear-gradient(135deg, #0a1f3b, #0f3060); }
+    .display-box.missing { background: linear-gradient(135deg, #0a2616, #0f3d20); }
 
     .display-number {
-      font-size: 4rem; font-weight: 900; color: white;
-      letter-spacing: 0.1em; min-height: 1.1em;
+      font-size: 4rem; font-weight: 800; color: white;
+      letter-spacing: 0.05em; min-height: 1.1em;
       animation: numPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      font-family: 'Space Grotesk', sans-serif;
     }
     @keyframes numPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
 
     .display-label {
-      font-size: 0.85rem; opacity: 0.75; margin-top: 8px; font-weight: 600; color: white;
+      font-size: 0.82rem; opacity: 0.7; margin-top: 8px; font-weight: 500; color: white;
     }
     .display-mode-badge {
       position: absolute; top: 10px; right: 12px;
-      background: rgba(255,255,255,0.18); color: white;
-      font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 50px;
+      background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9);
+      font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 50px;
+      letter-spacing: 0.5px;
     }
 
-    /* Progress dots showing sequence */
     .seq-dots {
-      display: flex; justify-content: center; gap: 7px; margin-bottom: 14px; flex-wrap: wrap;
+      display: flex; justify-content: center; gap: 7px; margin-bottom: 13px; flex-wrap: wrap;
     }
     .seq-dot {
-      width: 12px; height: 12px; border-radius: 50%;
-      background: #e0dcff; transition: background 0.25s, transform 0.25s;
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--border-2); transition: background 0.25s, transform 0.25s;
     }
-    .seq-dot.shown  { background: #6c63ff; }
-    .seq-dot.input  { background: #ffd166; transform: scale(1.2); }
-    .seq-dot.right  { background: #43c59e; }
-    .seq-dot.wrong  { background: #ff6584; }
+    .seq-dot.shown { background: var(--violet); }
+    .seq-dot.input { background: var(--amber); transform: scale(1.2); }
+    .seq-dot.right { background: var(--green); }
+    .seq-dot.wrong { background: var(--red); }
 
-    /* Answer slots */
     .answer-row {
-      display: flex; justify-content: center; gap: 8px;
-      flex-wrap: wrap; min-height: 56px; margin-bottom: 16px; align-items: center;
+      display: flex; justify-content: center; gap: 7px;
+      flex-wrap: wrap; min-height: 54px; margin-bottom: 14px; align-items: center;
     }
     .ans-slot {
-      width: 46px; height: 54px;
-      background: white; border: 2px solid #6c63ff;
-      border-radius: 12px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; font-weight: 900; color: #2d2b4e;
+      width: 44px; height: 52px;
+      background: var(--surface-2); border: 1px solid var(--violet);
+      border-radius: 11px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.35rem; font-weight: 800; color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
     }
-    .ans-slot.empty { border-style: dashed; color: #c8c2ff; font-size: 1rem; }
-    .ans-slot.correct { background: #d4f7e9; border-color: #43c59e; }
-    .ans-slot.wrong   { background: #fde0e0; border-color: #ff6584; }
-    .ans-slot.current { border-color: #ffd166; background: #fff8e1; animation: pulse 0.7s infinite alternate; }
+    .ans-slot.empty   { border-style: dashed; border-color: var(--border-2); color: var(--text-3); font-size:0.9rem; }
+    .ans-slot.correct { background: var(--green-dim);  border-color: var(--green); }
+    .ans-slot.wrong   { background: var(--red-dim);    border-color: var(--red); }
+    .ans-slot.current { border-color: var(--amber); background: var(--amber-dim); animation: pulse 0.7s infinite alternate; }
     @keyframes pulse { from{transform:scale(1)} to{transform:scale(1.06)} }
 
-    /* Number pad */
     .numpad {
       display: grid; grid-template-columns: repeat(3,1fr);
       gap: 8px; max-width: 300px; margin: 0 auto;
     }
     .nk {
-      height: 66px; background: white;
-      border: 2px solid #e0dcff; border-radius: 14px;
-      font-family: 'Nunito',sans-serif; font-size: 1.6rem; font-weight: 800;
-      color: #2d2b4e; cursor: pointer;
-      transition: transform 0.1s, background 0.1s;
-      box-shadow: 0 2px 8px rgba(108,99,255,0.08);
+      height: 64px; background: var(--surface);
+      border: 1px solid var(--border-2); border-radius: 13px;
+      font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700;
+      color: var(--text); cursor: pointer;
+      transition: transform 0.1s, background 0.1s, border-color 0.1s;
     }
-    .nk:active { transform: scale(0.9); background: #ede9ff; }
-    .nk.del { font-size: 1.2rem; color: #ff6584; border-color: #fde0e0; }
-    .nk.ok  { background: #6c63ff; color: white; border-color: #6c63ff; font-size: 1rem; font-weight: 800; }
-    .nk.ok:active { background: #5a52e0; }
-    .nk:disabled { opacity: 0.35; pointer-events: none; }
+    .nk:hover  { background: var(--surface-2); border-color: var(--violet); }
+    .nk:active { transform: scale(0.91); background: var(--violet-dim); }
+    .nk.del { font-size: 1.15rem; color: var(--red); border-color: var(--red-dim); }
+    .nk.ok  { background: linear-gradient(135deg, var(--violet), var(--blue)); color: white; border-color: transparent; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 18px rgba(139,92,246,0.3); }
+    .nk.ok:active { filter: brightness(0.9); }
+    .nk:disabled { opacity: 0.3; pointer-events: none; }
 
-    /* Mode announcement */
     .mode-announce {
-      position: fixed; inset: 0; background: rgba(45,43,78,0.75);
+      position: fixed; inset: 0; background: rgba(7,8,15,0.8);
+      backdrop-filter: blur(8px);
       z-index: 300; display: none; align-items: center; justify-content: center;
     }
     .mode-announce.show { display: flex; }
     .mode-card {
-      background: white; border-radius: 24px; padding: 32px 28px;
+      background: var(--surface-2); border: 1px solid var(--border-2);
+      border-radius: 22px; padding: 32px 28px;
       text-align: center; max-width: 300px; width: 88%;
       animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
     }
     @keyframes popIn { from{transform:scale(0.6);opacity:0} to{transform:scale(1);opacity:1} }
     .mode-card .m-icon { font-size: 3.5rem; margin-bottom: 10px; }
-    .mode-card h3 { font-size: 1.4rem; font-weight: 900; margin-bottom: 8px; }
-    .mode-card p  { color: #7b78a8; font-size: 0.95rem; margin-bottom: 20px; }
+    .mode-card h3 { font-size: 1.35rem; font-weight: 800; margin-bottom: 8px; font-family:'Space Grotesk',sans-serif; color: var(--text); }
+    .mode-card p  { color: var(--text-2); font-size: 0.9rem; margin-bottom: 18px; line-height: 1.55; }
   </style>
 </head>
 <body>
 <div class="game-page">
   <div class="game-header">
-    <a href="../index.html" class="back-btn">←</a>
-    <span class="game-title">🔢 Number Sequence</span>
+    <a href="../index.html" class="back-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <span class="game-title">Number Sequence</span>
     <span class="game-score-header" id="headerScore">Level 1</span>
   </div>
 
   <div class="game-body">
     <div id="introScreen">
       <div class="instruction-card">
-        <div style="font-size:3rem;margin-bottom:10px;">🔢</div>
+        <div style="margin-bottom:16px;display:flex;justify-content:center;"><div class="icon-box ic-blue ic" style="width:64px;height:64px;border-radius:18px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="12" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="20" cy="12" r="2.5"/><line x1="6.5" y1="12" x2="9.5" y2="12"/><line x1="14.5" y1="12" x2="17.5" y2="12"/></svg></div></div>
         <strong>How to play:</strong><br><br>
         Watch numbers appear one by one — then type them back.<br><br>
         As you level up, new challenges appear:<br>
-        🔄 <strong>Reverse</strong> — type the sequence backwards<br>
-        ➕ <strong>Maths</strong> — solve equations, type the answers<br>
-        ❓ <strong>Missing</strong> — fill in the gaps in the sequence<br><br>
-        <em style="font-size:0.85rem;color:#7b78a8;">Builds working memory, numerical processing, and mental agility.</em>
+        <span style="color:var(--violet)">↺</span> <strong>Reverse</strong> — type the sequence backwards<br>
+        <span style="color:var(--green)">+</span> <strong>Maths</strong> — solve equations, type the answers<br>
+        <span style="color:var(--cyan)">—</span> <strong>Missing</strong> — fill in the gaps in the sequence<br><br>
+        <em style="font-size:0.85rem;color:var(--text-3);">Builds working memory, numerical processing, and mental agility.</em>
       </div>
       <div class="score-bar">
         <div class="score-item"><div class="score-num" id="bestLevel">1</div><div class="score-label">Best Level</div></div>
         <div class="score-item"><div class="score-num" id="totalNS">0</div><div class="score-label">Sessions</div></div>
       </div>
-      <button class="big-btn" onclick="startGame()">Start Sequence 🔢</button>
+      <button class="big-btn" onclick="startGame()">Start Sequence</button>
     </div>
 
     <div id="gameScreen" style="display:none;">
@@ -169,7 +173,7 @@
   <!-- Mode announcement popup -->
   <div class="mode-announce" id="modeAnnounce">
     <div class="mode-card">
-      <div class="m-icon" id="modeIcon">🔄</div>
+      <div class="m-icon" id="modeIcon">↺</div>
       <h3 id="modeTitle">Reverse Mode!</h3>
       <p id="modeDesc">Type the sequence backwards this time.</p>
       <button class="big-btn" onclick="dismissMode()">Got it!</button>
@@ -183,7 +187,7 @@
       <p id="resultMsg"></p>
       <div class="result-actions">
         <button class="big-btn" onclick="startGame()">Play Again</button>
-        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home 🏠</a>
+        <a href="../index.html" class="big-btn orange" style="text-decoration:none;display:block;padding:18px;">Home</a>
       </div>
     </div>
   </div>
@@ -282,9 +286,9 @@ function needsAnnouncement(){
 }
 
 const MODES_INFO={
-  reverse:{icon:'🔄',title:'Reverse Mode!',desc:'Watch the sequence, then type it BACKWARDS.',color:'normal'},
-  math:{icon:'➕',title:'Maths Mode!',desc:'Solve each equation and type all the answers in order.',color:'normal'},
-  missing:{icon:'❓',title:'Missing Mode!',desc:'See the sequence with gaps — type only the missing numbers!',color:'normal'},
+  reverse:{icon:'↺',title:'Reverse Mode!',desc:'Watch the sequence, then type it BACKWARDS.',color:'normal'},
+  math:{icon:'+',title:'Maths Mode!',desc:'Solve each equation and type all the answers in order.',color:'normal'},
+  missing:{icon:'—',title:'Missing Mode!',desc:'See the sequence with gaps — type only the missing numbers!',color:'normal'},
 };
 
 function announceModeAndThen(cb){
@@ -307,8 +311,8 @@ function updateModeUI(){
   const modeMap={
     normal:['display-box normal','NORMAL'],
     reverse:['display-box reverse','REVERSE ↩'],
-    math:['display-box math','MATHS ➕'],
-    missing:['display-box missing','MISSING ❓']
+    math:['display-box math','MATHS +'],
+    missing:['display-box missing','MISSING —']
   };
   box.className=modeMap[mode][0];
   badge.textContent=modeMap[mode][1];
